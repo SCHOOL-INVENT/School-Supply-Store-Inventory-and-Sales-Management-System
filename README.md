@@ -1,57 +1,45 @@
 # School Supply Store Inventory and Sales Management System
 
-A JavaScript/Node.js CRUD API for managing school supply inventory. The project separates routing, validation/authorization middleware, controllers, and a small data layer so the application is easy to test and maintain.
+JavaScript/Node.js REST API for products, customers, suppliers, sales transactions, authentication, dashboard data, low-stock monitoring, and reports.
 
-## Requirements
-
-- Node.js 18+ recommended
-- npm
-
-## Install
+## Install and run
 
 ```bash
 npm install
-```
-
-## Run
-
-```bash
+npm test
 npm start
 ```
 
-The API starts on port 3000 by default.
-
-## Test
-
-```bash
-npm test
-```
-
-The test suite uses Node's built-in test runner and Supertest. It covers controller behavior, CRUD routes, validation (`422`), and authorization (`403`).
+Server: `http://localhost:3000`
 
 ## Main endpoints
 
-- `GET /supplies`
-- `GET /supplies/:id`
-- `POST /supplies`
-- `PUT /supplies/:id`
-- `DELETE /supplies/:id` (admin/owner required)
-- `GET /supplies/search?q=paper`
-- `GET /supplies/low-stock`
+- `POST /auth/login`
+- `/products` CRUD (and legacy `/supplies` alias)
+- `/customers` CRUD
+- `/suppliers` CRUD
+- `/sales` CRUD (and `/orders` alias)
+- `GET /dashboard` (Bearer authentication)
+- `GET /reports/inventory` (Bearer authentication)
+- `GET /reports/sales` (Bearer authentication)
+- `GET /reports/low-stock` (Bearer authentication)
+- `GET /reports/transactions` (Bearer authentication)
 
-The same router is available under `/products` for compatibility with the project's earlier routing documentation.
+## Demo accounts
 
-## Project structure
+- admin / admin123
+- staff / staff123
 
-```text
-controllers/      Business logic
-routes/           Express route definitions
-data/             Inventory data layer
-middleware/       Validation and authorization
-tests/             Automated tests
-docs/              Backlog, routing, validation, AI notes, wireframes
-```
+Demo credentials are for local school-project testing only.
 
 ## Response format
 
-Successful responses use `{ status, data, error }`. Validation errors use HTTP 422 and include the invalid `field`; unauthorized requests use HTTP 403.
+```json
+{"status":200,"data":{},"error":null}
+```
+
+Validation errors return 422, authorization failures 403, authentication failures 401, and missing records 404.
+
+## Documentation
+
+See `docs/backlog.md`, `docs/routes.md`, `docs/validation.md`, and `docs/wireframes/README.md`.

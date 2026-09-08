@@ -1,17 +1,10 @@
 {
-  "name": "school-supply-store-inventory-and-sales-management-system",
-  "version": "1.0.0",
-  "private": true,
-  "description": "JavaScript/Node.js CRUD API for school supply inventory and sales management.",
-  "main": "server.js",
-  "scripts": {
-    "start": "node server.js",
-    "test": "node --test"
-  },
-  "dependencies": {
-    "express": "^5.1.0"
-  },
-  "devDependencies": {
-    "supertest": "^7.1.4"
-  }
+  "name":"school-supply-store-inventory-and-sales-management-system",
+  "version":"1.1.0",
+  "private":true,
+  "description":"JavaScript/Node.js CRUD API for school supply inventory, customers, suppliers, sales, dashboard and reports.",
+  "main":"server.js",
+  "scripts":{"start":"node server.js","test":"node --test"},
+  "dependencies":{"express":"^5.1.0"},
+  "devDependencies":{"supertest":"^7.1.4"}
 }

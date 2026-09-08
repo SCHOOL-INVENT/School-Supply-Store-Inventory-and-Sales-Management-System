@@ -1,47 +1,10 @@
-const suppliesData = require("../data/suppliesData");
-
-function success(res, status, data) {
-  return res.status(status).json({ status, data, error: null });
-}
-
-function createSupply(req, res) {
-  try {
-    return success(res, 201, suppliesData.save(req.validatedBody));
-  } catch (err) {
-    return res.status(500).json({ status: 500, data: null, error: "Failed to add supply item", field: null });
-  }
-}
-
-function getAllSupplies(req, res) {
-  return success(res, 200, suppliesData.findAll());
-}
-
-function getSupplyById(req, res) {
-  const supply = suppliesData.findById(req.params.id);
-  if (!supply) return res.status(404).json({ status: 404, data: null, error: "Supply item not found", field: "id" });
-  return success(res, 200, supply);
-}
-
-function updateSupply(req, res) {
-  const updated = suppliesData.updateById(req.params.id, req.validatedBody);
-  if (!updated) return res.status(404).json({ status: 404, data: null, error: "Supply item not found", field: "id" });
-  return success(res, 200, updated);
-}
-
-function deleteSupply(req, res) {
-  const deleted = suppliesData.deleteById(req.params.id);
-  if (!deleted) return res.status(404).json({ status: 404, data: null, error: "Supply item not found", field: "id" });
-  return success(res, 200, { message: "Supply item deleted successfully" });
-}
-
-function searchSupplies(req, res) {
-  return success(res, 200, suppliesData.search(req.query.q));
-}
-
-function getLowStock(req, res) {
-  const threshold = req.query.threshold === undefined ? 20 : Number(req.query.threshold);
-  if (!Number.isInteger(threshold) || threshold < 0) return res.status(422).json({ status: 422, data: null, error: "Threshold must be a non-negative integer", field: "threshold" });
-  return success(res, 200, suppliesData.lowStock(threshold));
-}
-
-module.exports = { createSupply, getAllSupplies, getSupplyById, updateSupply, deleteSupply, searchSupplies, getLowStock };
+const products = require("./productsController");
+const data = require("../data/suppliesData");
+function createSupply(req,res){return products.createProduct(req,res);}
+function getAllSupplies(req,res){return products.getAllProducts(req,res);}
+function getSupplyById(req,res){return products.getProductById(req,res);}
+function updateSupply(req,res){return products.updateProduct(req,res);}
+function deleteSupply(req,res){const item=data.deleteById(req.params.id);if(!item)return res.status(404).json({status:404,data:null,error:"Supply item not found",field:"id"});return res.status(200).json({status:200,data:{message:"Supply item deleted successfully",item},error:null});}
+function searchSupplies(req,res){return products.searchProducts(req,res);}
+function getLowStock(req,res){return products.getLowStock(req,res);}
+module.exports={createSupply,getAllSupplies,getSupplyById,updateSupply,deleteSupply,searchSupplies,getLowStock,data};

@@ -1,0 +1,1 @@
+const express=require("express");const router=express.Router();const c=require("../salesController");const {validateSale}=require("../../middleware/validation");router.get("/",c.listSales);router.get("/:id",c.getSale);router.post("/",validateSale,c.createSale);router.put("/:id",validateSale,c.updateSale);router.delete("/:id",c.deleteSale);module.exports=router;

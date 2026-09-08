@@ -9,7 +9,7 @@ function mockReqRes(body = {}, params = {}) {
   return { req, res };
 }
 
-test.beforeEach(() => suppliesData.clearForTests());
+test.beforeEach(() => suppliesData.seedForTests());
 
 test("createSupply adds a valid school supply item and returns 201", () => {
   const { req, res } = mockReqRes({ name: "Bond Paper", category: "Paper", quantity: 50, unitPrice: 45.50, status: "in-stock" });
