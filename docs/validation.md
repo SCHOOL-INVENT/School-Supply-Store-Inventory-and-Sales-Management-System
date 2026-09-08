@@ -1,33 +1,23 @@
-# Validation Rules — School Supply Store Inventory System
+# Validation Matrix
 
-All create and update requests are validated by middleware before reaching the controller. Validation failures return HTTP `422` using the standard response shape below.
+## Products / Supplies
 
-## Validation Matrix
+- `name`: required on create, string, 2-100 characters
+- `category`: required on create, string, 2-50 characters
+- `quantity`: required on create, integer 0-9999
+- `unitPrice`: required on create, non-negative number, max 2 decimals
+- `status`: required on create, one of `in-stock`, `low-stock`, `out-of-stock`
+- `supplierId`: optional positive integer
+- Unknown fields are rejected with HTTP 422.
 
-| Route | Field | Validation Rules |
-|---|---|---|
-| **POST /supplies** | name | Required, string, 2–100 characters |
-| | category | Required, string, 2–50 characters |
-| | quantity | Required, integer, 0–9999 |
-| | unitPrice | Required, number, ≥ 0, up to 2 decimal places |
-| | status | Required: `in-stock`, `low-stock`, or `out-of-stock` |
-| **PUT /supplies/:id** | name | Optional, string, 2–100 characters |
-| | category | Optional, string, 2–50 characters |
-| | quantity | Optional, integer, 0–9999 |
-| | unitPrice | Optional, number, ≥ 0, up to 2 decimal places |
-| | status | Optional: `in-stock`, `low-stock`, or `out-of-stock` |
+## Customers / Suppliers
 
-## Standard Error Response
+`name` and `contact` are required strings. Requests with a non-object body return 422.
 
-```json
-{
-  "status": 422,
-  "data": null,
-  "error": "clear human-readable message",
-  "field": "field-name"
-}
-```
+## Sales
+
+A sale requires at least one item. Each item needs a positive integer `productId` and `quantity`. Optional `customerId` must be a positive integer and refer to an existing customer. Sales exceeding available inventory return 422.
 
 ## Authorization
 
-Deleting a supply requires the request to identify an `admin` or `owner` role through the authenticated user context or `x-user-role` header. Unauthorized deletion requests receive HTTP `403`.
+Deleting products/supplies/customers/suppliers requires role `admin` or `owner`; unauthorized requests return HTTP 403 with the standard error envelope. Dashboard and reports require a valid Bearer token from `/auth/login`.

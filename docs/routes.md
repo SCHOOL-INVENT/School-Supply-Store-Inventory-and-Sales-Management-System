@@ -1,31 +1,15 @@
-# School Supply Store Inventory and Sales Management System — Routes
+# Routes and Controller Map
 
-## Routing and Controller Map
+All successful responses use `{ status, data, error }`. Validation failures use HTTP 422; authorization failures use HTTP 403; missing resources use HTTP 404.
 
-| Method | Path | Middleware | Controller | Story |
-|---|---|---|---|---|
-| GET | `/supplies` | — | `getAllSupplies` | US-03 |
-| GET | `/supplies/:id` | — | `getSupplyById` | US-03 |
-| POST | `/supplies` | `validateCreateSupply` | `createSupply` | US-02 |
-| PUT | `/supplies/:id` | `validateUpdateSupply` | `updateSupply` | US-04 |
-| DELETE | `/supplies/:id` | `validateAdminOrOwner` | `deleteSupply` | US-05 |
-| GET | `/supplies/search?q=` | — | `searchSupplies` | Product search |
-| GET | `/supplies/low-stock` | — | `getLowStock` | US-09 |
+| Resource | GET list | GET one | POST | PUT | DELETE | Controller |
+|---|---|---|---|---|---|---|
+| Products | `/products` | `/products/:id` | `/products` | `/products/:id` | `/products/:id` | `productsController.js` |
+| Supplies (legacy alias) | `/supplies` | `/supplies/:id` | `/supplies` | `/supplies/:id` | `/supplies/:id` | `suppliesController.js` -> products |
+| Customers | `/customers` | `/customers/:id` | `/customers` | `/customers/:id` | `/customers/:id` | `customersController.js` |
+| Suppliers | `/suppliers` | `/suppliers/:id` | `/suppliers` | `/suppliers/:id` | `/suppliers/:id` | `suppliersController.js` |
+| Sales | `/sales` | `/sales/:id` | `/sales` | `/sales/:id` | `/sales/:id` | `salesController.js` |
 
-The same supplies router is mounted under `/products` for compatibility with the earlier Week 3 route naming.
+Additional routes: `/orders` is a sales alias; `/products/search`, `/products/low-stock`; `/auth/login`; `/dashboard`; `/reports/inventory`; `/reports/sales`; `/reports/low-stock`; `/reports/transactions`.
 
-## Flow
-
-`HTTP Request → Express Router → Validation/Authorization Middleware → Controller → Data Layer → Standard Response`
-
-Controllers do not perform routing or request validation. Validation failures return `422`; authorization failures return `403`; missing records return `404`.
-
-## Standard Success Response
-
-```json
-{
-  "status": 200,
-  "data": {},
-  "error": null
-}
-```
+Flow: request -> route -> validation/auth middleware -> controller -> data layer -> standardized JSON response.
