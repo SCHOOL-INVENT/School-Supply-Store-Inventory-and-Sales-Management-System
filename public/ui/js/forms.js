@@ -44,8 +44,8 @@ async function submit(e){
  e.preventDefault();clearInvalid();setBusy(true);message("Saving...","loading");
  let data;
  if(entity==="Products"){data={name:field("name").value,category:field("category").value,quantity:Number(field("quantity").value),unitPrice:Number(field("unitPrice").value),status:field("status")?field("status").value:"in-stock"};if(field("supplierId").value)data.supplierId=Number(field("supplierId").value)}
- if(entity==="Suppliers"||entity==="Customers"){data={name:field("name").value,contact:field("contact").value,email:field("email").value,address:field("address").value}}
- if(entity==="Sales"){data={customerId:field("customerId").value?Number(field("customerId").value):null,items:[{productId:Number(field("productId").value),quantity:Number(field("quantity").value)}]}}
+ if(entity==="Suppliers"||entity==="Customers"){data={name:field("name").value,contact:field("contact").value};if(field("email").value)data.email=field("email").value;if(field("address").value)data.address=field("address").value}
+ if(entity==="Sales"){data={items:[{productId:Number(field("productId").value),quantity:Number(field("quantity").value)}]};if(field("customerId").value)data.customerId=Number(field("customerId").value)}
  const url=mode==="update"?API[entity]+"/"+encodeURIComponent(id):API[entity];
  try{
   const res=await fetch(url,{method:mode==="update"?"PUT":"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(data)});
