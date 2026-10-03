@@ -91,3 +91,11 @@ The test suite uses Node's built-in test runner with Supertest and runs serially
 - `tests/deliverable-2.test.js` — CRUD, business logic, validation, and edge-case integration tests
 - `tests/validation.test.js` — validation guard-clause tests
 - `docs/ai-notes/deliverable-2.md` — instructor-authorized AI-use statement
+
+## Week 4 — Input Validation & Defensive Coding
+
+- `docs/week4.md` — Week 4 defensive-coding implementation notes and break-the-app checklist.
+- `docs/validation-matrix.md` — field-by-field validation matrix and expected HTTP responses.
+- `tests/week4-validation.test.js` — deliberate bad-input tests covering guard clauses and protected actions.
+- `docs/ai-notes/week4.md` — instructor-authorized AI-use statement.
+
