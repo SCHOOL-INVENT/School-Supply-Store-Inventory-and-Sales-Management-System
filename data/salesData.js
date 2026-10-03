@@ -1,10 +1,9 @@
-let sales=[];
-let nextId=1;
-function clone(v){return v==null?v:JSON.parse(JSON.stringify(v));}
-function findAll(){return clone(sales);}
-function findById(id){return clone(sales.find(x=>x.id===Number(id))||null);}
-function save(item){const x={...item,id:nextId++};sales.push(x);return clone(x);}
-function updateById(id,changes){const i=sales.findIndex(x=>x.id===Number(id));if(i<0)return null;sales[i]={...sales[i],...changes};return clone(sales[i]);}
-function deleteById(id){const i=sales.findIndex(x=>x.id===Number(id));if(i<0)return null;return clone(sales.splice(i,1)[0]);}
-function clearForTests(){sales=[];nextId=1;}
+const {db}=require("./database");
+const mapSale=r=>{if(!r)return null;const items=db.prepare("SELECT si.product_id productId,p.name,si.quantity,si.unit_price unitPrice,si.line_total lineTotal FROM sale_items si JOIN products p ON p.id=si.product_id WHERE si.sale_id=? ORDER BY si.id").all(r.id);return {id:r.id,customerId:r.customer_id,userId:r.user_id,items,total:r.total,transactionDate:r.transaction_date};};
+const findAll=()=>db.prepare("SELECT * FROM sales ORDER BY id").all().map(mapSale);
+const findById=id=>mapSale(db.prepare("SELECT * FROM sales WHERE id=?").get(Number(id)));
+const save=sale=>{const tx=db.transaction(()=>{const r=db.prepare("INSERT INTO sales(customer_id,total,transaction_date) VALUES(?,?,?)").run(sale.customerId??null,sale.total,sale.transactionDate);const ins=db.prepare("INSERT INTO sale_items(sale_id,product_id,quantity,unit_price,line_total) VALUES(?,?,?,?,?)");for(const i of sale.items)ins.run(r.lastInsertRowid,i.productId,i.quantity,i.unitPrice,i.lineTotal);return r.lastInsertRowid;});return findById(tx());};
+const updateById=(id,sale)=>{if(!findById(id))return null;const tx=db.transaction(()=>{db.prepare("DELETE FROM sale_items WHERE sale_id=?").run(Number(id));db.prepare("UPDATE sales SET customer_id=?,total=?,transaction_date=? WHERE id=?").run(sale.customerId??null,sale.total,sale.transactionDate,Number(id));const ins=db.prepare("INSERT INTO sale_items(sale_id,product_id,quantity,unit_price,line_total) VALUES(?,?,?,?,?)");for(const i of sale.items)ins.run(Number(id),i.productId,i.quantity,i.unitPrice,i.lineTotal);});tx();return findById(id);};
+const deleteById=id=>{const x=findById(id);if(!x)return null;db.prepare("DELETE FROM sales WHERE id=?").run(Number(id));return x;};
+const clearForTests=()=>db.prepare("DELETE FROM sales").run();
 module.exports={findAll,findById,save,updateById,deleteById,clearForTests};
