@@ -72,3 +72,22 @@ The Week 2 handout requires every story to be an owned board ticket, every story
 
 - `docs/routes.md` — complete 20-route REST routing table and request/response examples.
 - `docs/week3.md` — Week 3 implementation and testing checklist.
+
+## Deliverable 2 — Routing, Logic & Tests
+
+### Test command
+
+```bash
+npm install
+npm test
+```
+
+The test suite uses Node's built-in test runner with Supertest and runs serially because the application uses a shared local SQLite database during integration tests.
+
+### Deliverable 2 evidence
+
+- `docs/routes.md` — REST routing table
+- `docs/validation.md` — validation rules and standardized 422 behavior
+- `tests/deliverable-2.test.js` — CRUD, business logic, validation, and edge-case integration tests
+- `tests/validation.test.js` — validation guard-clause tests
+- `docs/ai-notes/deliverable-2.md` — instructor-authorized AI-use statement
