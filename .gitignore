@@ -15,3 +15,4 @@ Thumbs.db
 # Dependency folders
 vendor/
 node_modules/
+\n# Local database\ndata/*.db\ndata/*.db-shm\ndata/*.db-wal\n

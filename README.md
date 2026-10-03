@@ -1,6 +1,12 @@
 # School Supply Store Inventory and Sales Management System
 
-JavaScript/Node.js REST API for products, customers, suppliers, sales transactions, authentication, dashboard data, low-stock monitoring, and reports.
+Node.js/Express REST API for a school supply inventory and sales management system with a persistent SQLite database.
+
+## Stack
+- Node.js
+- Express 5
+- SQLite via better-sqlite3
+- Supertest for API tests
 
 ## Install and run
 
@@ -12,25 +18,34 @@ npm start
 
 Server: `http://localhost:3000`
 
+The SQLite database is created automatically at `data/school_inventory.db` on first start. The database file is ignored by Git.
+
+## Demo accounts
+
+- **admin / admin123**
+- **staff / staff123**
+
+These accounts are seeded automatically for local school-project testing.
+
 ## Main endpoints
 
 - `POST /auth/login`
-- `/products` CRUD (and legacy `/supplies` alias)
+- `/products` CRUD
+- `/supplies` legacy alias for products
 - `/customers` CRUD
 - `/suppliers` CRUD
-- `/sales` CRUD (and `/orders` alias)
+- `/sales` CRUD with automatic stock deduction/restoration
 - `GET /dashboard` (Bearer authentication)
 - `GET /reports/inventory` (Bearer authentication)
 - `GET /reports/sales` (Bearer authentication)
 - `GET /reports/low-stock` (Bearer authentication)
 - `GET /reports/transactions` (Bearer authentication)
 
-## Demo accounts
+## Database tables
 
-- admin / admin123
-- staff / staff123
+`users`, `products`, `suppliers`, `customers`, `sales`, `sale_items`, and `stock_transactions`.
 
-Demo credentials are for local school-project testing only.
+Foreign keys and indexes are enabled by the database layer.
 
 ## Response format
 
@@ -39,7 +54,3 @@ Demo credentials are for local school-project testing only.
 ```
 
 Validation errors return 422, authorization failures 403, authentication failures 401, and missing records 404.
-
-## Documentation
-
-See `docs/backlog.md`, `docs/routes.md`, `docs/validation.md`, and `docs/wireframes/README.md`.

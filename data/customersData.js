@@ -1,13 +1,9 @@
-let customers = [
-  { id: 1, name: "Juan Dela Cruz", contact: "09171234567", email: "juan@example.com", address: "Cebu City" },
-  { id: 2, name: "Mary Santos", contact: "09181234567", email: "mary@example.com", address: "Mandaue City" }
-];
-let nextId = 3;
-function clone(v){ return v == null ? v : JSON.parse(JSON.stringify(v)); }
-function findAll(){ return clone(customers); }
-function findById(id){ return clone(customers.find(x=>x.id===Number(id))||null); }
-function save(item){ const x={...item,id:nextId++}; customers.push(x); return clone(x); }
-function updateById(id, changes){ const i=customers.findIndex(x=>x.id===Number(id)); if(i<0)return null; customers[i]={...customers[i],...changes}; return clone(customers[i]); }
-function deleteById(id){ const i=customers.findIndex(x=>x.id===Number(id)); if(i<0)return null; return clone(customers.splice(i,1)[0]); }
-function clearForTests(){customers=[];nextId=1;}
+const {db}=require("./database");
+const map=r=>r&&({id:r.id,name:r.name,contact:r.contact,email:r.email,address:r.address});
+const findAll=()=>db.prepare("SELECT * FROM customers ORDER BY id").all().map(map);
+const findById=id=>map(db.prepare("SELECT * FROM customers WHERE id=?").get(Number(id)));
+const save=x=>{const r=db.prepare("INSERT INTO customers(name,contact,email,address) VALUES(?,?,?,?)").run(x.name,x.contact,x.email??null,x.address??null);return findById(r.lastInsertRowid);};
+const updateById=(id,c)=>{if(!findById(id))return null;db.prepare("UPDATE customers SET name=?,contact=?,email=?,address=? WHERE id=?").run(c.name,c.contact,c.email??null,c.address??null,Number(id));return findById(id);};
+const deleteById=id=>{const x=findById(id);if(!x)return null;db.prepare("DELETE FROM customers WHERE id=?").run(Number(id));return x;};
+const clearForTests=()=>db.prepare("DELETE FROM customers").run();
 module.exports={findAll,findById,save,updateById,deleteById,clearForTests};

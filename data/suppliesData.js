@@ -1,24 +1,12 @@
-let supplies = [
-  { id: 1, name: "Ballpen", category: "Writing", quantity: 120, unitPrice: 15, status: "in-stock", supplierId: 1 },
-  { id: 2, name: "Notebook", category: "Paper", quantity: 80, unitPrice: 35, status: "in-stock", supplierId: 2 },
-  { id: 3, name: "Pencil", category: "Writing", quantity: 40, unitPrice: 10, status: "low-stock", supplierId: 1 },
-  { id: 4, name: "Eraser", category: "Writing", quantity: 150, unitPrice: 8, status: "in-stock", supplierId: 1 },
-  { id: 5, name: "Ruler", category: "Tools", quantity: 60, unitPrice: 20, status: "in-stock", supplierId: 2 },
-  { id: 6, name: "Glue", category: "Supplies", quantity: 40, unitPrice: 25, status: "low-stock", supplierId: 2 }
-];
-let nextId = 7;
-
-function clone(value) { return value == null ? value : JSON.parse(JSON.stringify(value)); }
-function findAll() { return clone(supplies); }
-function findById(id) { return clone(supplies.find(item => item.id === Number(id)) || null); }
-function save(item) { const record = { ...item, id: nextId++ }; supplies.push(record); return clone(record); }
-function updateById(id, changes) { const index = supplies.findIndex(item => item.id === Number(id)); if (index === -1) return null; supplies[index] = { ...supplies[index], ...changes }; return clone(supplies[index]); }
-function deleteById(id) { const index = supplies.findIndex(item => item.id === Number(id)); if (index === -1) return null; return clone(supplies.splice(index, 1)[0]); }
-function search(term) { const q = String(term || '').trim().toLowerCase(); return clone(supplies.filter(item => !q || item.name.toLowerCase().includes(q) || item.category.toLowerCase().includes(q))); }
-function lowStock(threshold = 10) { return clone(supplies.filter(item => item.quantity <= Number(threshold))); }
-function clearForTests() { supplies = []; nextId = 1; }
-function seedForTests() { supplies = [
-  { id: 1, name: "Ballpen", category: "Writing", quantity: 120, unitPrice: 15, status: "in-stock", supplierId: 1 },
-  { id: 2, name: "Notebook", category: "Paper", quantity: 80, unitPrice: 35, status: "in-stock", supplierId: 2 }
-]; nextId = 3; }
-module.exports = { findAll, findById, save, updateById, deleteById, search, lowStock, clearForTests, seedForTests };
+const { db, statusFor } = require("./database");
+const map = r => r ? ({id:r.id,name:r.name,category:r.category,quantity:r.quantity,unitPrice:r.unit_price,status:r.status,supplierId:r.supplier_id}) : null;
+const findAll=()=>db.prepare("SELECT * FROM products ORDER BY id").all().map(map);
+const findById=id=>map(db.prepare("SELECT * FROM products WHERE id=?").get(Number(id)));
+const save=item=>{const q=item.quantity;const r=db.prepare("INSERT INTO products(name,category,quantity,unit_price,status,supplier_id) VALUES(?,?,?,?,?,?)").run(item.name,item.category,q,item.unitPrice,statusFor(q),item.supplierId??null);return findById(r.lastInsertRowid);};
+const updateById=(id,changes)=>{const old=findById(id);if(!old)return null;const x={...old,...changes};const q=x.quantity;db.prepare("UPDATE products SET name=?,category=?,quantity=?,unit_price=?,status=?,supplier_id=?,updated_at=CURRENT_TIMESTAMP WHERE id=?").run(x.name,x.category,q,x.unitPrice,statusFor(q),x.supplierId??null,Number(id));return findById(id);};
+const deleteById=id=>{const x=findById(id);if(!x)return null;db.prepare("DELETE FROM products WHERE id=?").run(Number(id));return x;};
+const search=term=>{const q=String(term||"").trim().toLowerCase();return findAll().filter(x=>!q||x.name.toLowerCase().includes(q)||x.category.toLowerCase().includes(q));};
+const lowStock=threshold=>findAll().filter(x=>x.quantity<=Number(threshold));
+const clearForTests=()=>db.prepare("DELETE FROM products").run();
+const seedForTests=()=>{};
+module.exports={findAll,findById,save,updateById,deleteById,search,lowStock,clearForTests,seedForTests};
