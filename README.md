@@ -66,3 +66,9 @@ Week 2 deliverables are documented in:
 - `docs/ai-notes/deliverable-1.md` — AI scope stress-test prompt, findings, and team decision.
 
 The Week 2 handout requires every story to be an owned board ticket, every story to have acceptance criteria, and the wireframes to be committed through a reviewed pull request.
+
+
+## Week 3 — Routing Skeleton
+
+- `docs/routes.md` — complete 20-route REST routing table and request/response examples.
+- `docs/week3.md` — Week 3 implementation and testing checklist.
