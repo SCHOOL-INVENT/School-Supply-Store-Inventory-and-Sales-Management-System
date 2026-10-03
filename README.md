@@ -55,3 +55,14 @@ Direct pushes to `main` should be blocked after branch protection is configured.
 - [ ] Merge the README PR after a team-member review
 
 See `docs/week1/` for the Week 1 problem statement, AI brainstorming note, and board setup checklist.
+
+
+## Week 2 — Backlog & Wireframes
+
+Week 2 deliverables are documented in:
+
+- `docs/backlog.md` — 20 CRUD user stories covering Products, Suppliers, Customers, and Sales/Transactions, with acceptance criteria.
+- `docs/wireframes/` — low-fidelity wireframes for list, detail, create, edit, empty, error, and delete-confirmation states for each record type.
+- `docs/ai-notes/deliverable-1.md` — AI scope stress-test prompt, findings, and team decision.
+
+The Week 2 handout requires every story to be an owned board ticket, every story to have acceptance criteria, and the wireframes to be committed through a reviewed pull request.
