@@ -162,11 +162,21 @@ test("Deliverable 2: edge cases use 404/403 consistently", async () => {
   const missingSale = await request(app).get("/sales/999999999");
   assert.equal(missingSale.status, 404);
 
-  const unauthorizedDelete = await request(app).delete("/products/1");
+  const product = await request(app).post("/products").send({
+    name: unique("Edge Test Product"),
+    category: "Testing",
+    quantity: 5,
+    unitPrice: 3,
+    status: "in-stock"
+  });
+  assert.equal(product.status, 201);
+  const productId = product.body.data.id;
+
+  const unauthorizedDelete = await request(app).delete("/products/" + productId);
   assert.equal(unauthorizedDelete.status, 401);
 
   const authorizedDelete = await request(app)
-    .delete("/products/1")
+    .delete("/products/" + productId)
     .set("Authorization", "Bearer " + auth);
   assert.equal(authorizedDelete.status, 200);
 });
