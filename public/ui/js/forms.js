@@ -8,7 +8,7 @@ const mode=form.dataset.mode||"create";
 const id=new URLSearchParams(location.search).get("id");
 const statusBox=document.querySelector("#form-status");
 const button=form.querySelector("button[type=submit]");
-function message(text,type){statusBox.textContent=text;statusBox.className="form-message "+(type||"");}
+function message(text,type){if(window.UIFeedback)UIFeedback.show(statusBox,text,type);else{statusBox.textContent=text;statusBox.className="form-message "+(type||"");}}
 function setBusy(busy){button.disabled=busy;button.textContent=busy?(mode==="update"?"Updating...":"Saving..."):(mode==="update"?"Update "+names[entity]:"Save "+names[entity]);}
 function field(name){return form.querySelector("[name='"+name+"']");}
 function showError(err){message(err.error||"Unable to save. Please check your input.","error");var target=err.field&&field(err.field);if(target){target.classList.add("invalid");target.focus();}}
@@ -31,13 +31,13 @@ async function loadEdit(){
  try{
   const res=await fetch(API[entity]+"/"+encodeURIComponent(id));
   const json=await res.json();
-  if(!res.ok){showError(json);return;}
+  if(!res.ok){showError(json);if(res.status===404){button.disabled=true;}return;}
   const d=json.data;
   if(entity==="Products"){field("name").value=d.name||"";field("category").value=d.category||"";field("quantity").value=d.quantity??"";field("unitPrice").value=d.unitPrice??"";field("supplierId").value=d.supplierId??"";}
   if(entity==="Suppliers"||entity==="Customers"){["name","contact","email","address"].forEach(function(k){if(field(k))field(k).value=d[k]||""});}
   if(entity==="Sales"){field("customerId").value=d.customerId||"";if(d.items&&d.items[0]){field("productId").value=d.items[0].productId||"";field("quantity").value=d.items[0].quantity||1;}}
   message("Record loaded.","success");
- }catch(e){message("Network error while loading the record.","error")}
+ }catch(e){message("We could not load this record. Check your connection and try again.","error");button.disabled=false}
  finally{setBusy(false)}
 }
 async function submit(e){
@@ -54,7 +54,7 @@ async function submit(e){
    message("Saved successfully. Updating the list...","success");
    setTimeout(function(){location.href="/ui/"+entity.toLowerCase()+".html"},300);
   }else{showError(json);setBusy(false)}
- }catch(e){message("Network/server error. Please try again.","error");setBusy(false)}
+ }catch(e){message("We could not reach the server. Check your connection and try again.","error");setBusy(false)}
 }
 form.addEventListener("submit",submit);loadOptions().then(loadEdit);
 })();
