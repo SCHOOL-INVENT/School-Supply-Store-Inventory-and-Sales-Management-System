@@ -99,3 +99,13 @@ The test suite uses Node's built-in test runner with Supertest and runs serially
 - `tests/week4-validation.test.js` — deliberate bad-input tests covering guard clauses and protected actions.
 - `docs/ai-notes/week4.md` — instructor-authorized AI-use statement.
 
+
+## Week 6 — Views & Component Architecture
+
+- `docs/components.md` — reusable components mapped to the Week 6 screens.
+- `docs/week6.md` — Week 6 implementation notes and local run instructions.
+- `docs/ai-notes/week-06.md` — required AI prompt log and ownership labels.
+- `public/ui/` — static Dashboard, Products, Suppliers, Customers, and Sales views.
+- `public/css/styles.css` and `public/js/components.js` — shared interface structure.
+
+Run `npm start` and open `/ui/` to review the Week 6 views. Real backend data binding is intentionally deferred to Week 7.

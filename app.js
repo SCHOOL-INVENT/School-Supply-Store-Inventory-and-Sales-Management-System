@@ -1,5 +1,6 @@
 const express=require("express");
 const app=express();app.use(express.json());
+app.use("/ui", express.static("public/ui"));
 app.get("/",(req,res)=>res.status(200).json({status:200,data:{name:"School Supply Store Inventory and Sales Management System",version:"1.1.0"},error:null}));
 app.use("/auth",require("./controllers/routes/auth"));
 app.use("/dashboard",require("./controllers/routes/dashboard"));
