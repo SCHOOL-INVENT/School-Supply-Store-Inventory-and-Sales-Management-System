@@ -13,6 +13,17 @@ function setBusy(busy){button.disabled=busy;button.textContent=busy?(mode==="upd
 function field(name){return form.querySelector("[name='"+name+"']");}
 function showError(err){message(err.error||"Unable to save. Please check your input.","error");var target=err.field&&field(err.field);if(target){target.classList.add("invalid");target.focus();}}
 function clearInvalid(){form.querySelectorAll(".invalid").forEach(function(x){x.classList.remove("invalid")});}
+async function populateSelect(selectName,url,labelKey){
+ const select=field(selectName);if(!select)return;
+ try{const res=await fetch(url);const json=await res.json();if(!res.ok)return;
+  (json.data||[]).forEach(function(item){var o=document.createElement("option");o.value=item.id;o.textContent=item[labelKey]||("Record #"+item.id);select.appendChild(o)});
+ }catch(e){}
+}
+async function loadOptions(){
+ if(entity==="Products")await populateSelect("supplierId","/suppliers","name");
+ if(entity==="Sales"){await populateSelect("customerId","/customers","name");await populateSelect("productId","/products","name");}
+}
+
 async function loadEdit(){
  if(mode!=="update")return;
  if(!id){message("Missing record ID. Open this page from an Edit link.","error");button.disabled=true;return;}
@@ -45,5 +56,5 @@ async function submit(e){
   }else{showError(json);setBusy(false)}
  }catch(e){message("Network/server error. Please try again.","error");setBusy(false)}
 }
-form.addEventListener("submit",submit);loadEdit();
+form.addEventListener("submit",submit);loadOptions().then(loadEdit);
 })();
