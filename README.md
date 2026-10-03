@@ -109,3 +109,13 @@ The test suite uses Node's built-in test runner with Supertest and runs serially
 - `public/css/styles.css` and `public/js/components.js` — shared interface structure.
 
 Run `npm start` and open `/ui/` to review the Week 6 views. Real backend data binding is intentionally deferred to Week 7.
+
+## Week 7 — Form Binding & Async Operations
+
+- `docs/week7.md` — Week 7 implementation notes.
+- `docs/binding-tests.md` — end-to-end binding test checklist and execution note.
+- `docs/ai-notes/week-07.md` — required AI prompt log with ownership labels.
+- `public/ui/js/forms.js` — Fetch-based Create/Update binding and async lifecycle handling.
+- `public/ui/js/list.js` — backend-backed list rendering with loading/empty/error states.
+
+The Week 7 UI connects the existing Phase 2 controllers to the Week 6 forms. Real browser/database test execution should be completed locally before merge.
