@@ -1,56 +1,57 @@
 # School Supply Store Inventory and Sales Management System
 
-Node.js/Express REST API for a school supply inventory and sales management system with a persistent SQLite database.
+A small CRUD-shaped system for managing school-supply products, suppliers, customers, inventory transactions, and sales.
 
-## Stack
+## Week 1 — Project Scaffolding
+
+### Problem statement
+
+The school supply store needs a simple way to keep its inventory records organized because supplies, stock quantities, suppliers, customers, and sales can become difficult to track consistently using manual records. The proposed School Supply Store Inventory and Sales Management System will provide a centralized application where authorized users can create, view, update, and delete supply records, monitor stock levels, manage suppliers and customers, and record sales transactions. The project is intentionally scoped to a small CRUD-based system that can be developed and tested within the course schedule.
+
+### Main record types
+
+1. **Products / School Supplies** — item name, category, quantity, unit price, status, and supplier.
+2. **Suppliers** — supplier name and contact information.
+3. **Customers** — customer name and contact information.
+4. **Sales / Transactions** — customer, items purchased, quantities, prices, total, and transaction date.
+
+### Project stack
+
 - Node.js
-- Express 5
-- SQLite via better-sqlite3
-- Supertest for API tests
+- Express
+- SQLite database
+- GitHub
+- REST API
 
-## Install and run
+### Team roster
 
-```bash
-npm install
-npm test
-npm start
-```
+Replace the placeholders below with the five team members and starting roles.
 
-Server: `http://localhost:3000`
+| Member | Starting role |
+|---|---|
+| Team Member 1 | Repo Lead |
+| Team Member 2 | Board Lead |
+| Team Member 3 | Scribe |
+| Team Member 4 | Builder |
+| Team Member 5 | Builder |
 
-The SQLite database is created automatically at `data/school_inventory.db` on first start. The database file is ignored by Git.
+### Git collaboration loop
 
-## Demo accounts
+`pull main → create branch → commit → push branch → open PR → review → merge`
 
-- **admin / admin123**
-- **staff / staff123**
+Direct pushes to `main` should be blocked after branch protection is configured.
 
-These accounts are seeded automatically for local school-project testing.
+### Week 1 deliverables
 
-## Main endpoints
+- [x] Project selected
+- [x] Problem statement documented
+- [x] 4 core record types documented
+- [x] Git repository initialized
+- [x] Week 1 documentation added through a branch
+- [ ] Add all 5 collaborators
+- [ ] Enable and test main branch protection
+- [ ] Create GitHub Project board
+- [ ] Create and assign at least 4 Week 1 tickets
+- [ ] Merge the README PR after a team-member review
 
-- `POST /auth/login`
-- `/products` CRUD
-- `/supplies` legacy alias for products
-- `/customers` CRUD
-- `/suppliers` CRUD
-- `/sales` CRUD with automatic stock deduction/restoration
-- `GET /dashboard` (Bearer authentication)
-- `GET /reports/inventory` (Bearer authentication)
-- `GET /reports/sales` (Bearer authentication)
-- `GET /reports/low-stock` (Bearer authentication)
-- `GET /reports/transactions` (Bearer authentication)
-
-## Database tables
-
-`users`, `products`, `suppliers`, `customers`, `sales`, `sale_items`, and `stock_transactions`.
-
-Foreign keys and indexes are enabled by the database layer.
-
-## Response format
-
-```json
-{"status":200,"data":{},"error":null}
-```
-
-Validation errors return 422, authorization failures 403, authentication failures 401, and missing records 404.
+See `docs/week1/` for the Week 1 problem statement, AI brainstorming note, and board setup checklist.
