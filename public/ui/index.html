@@ -1,35 +1,4 @@
-<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Dashboard - School Supply Store</title><link rel="stylesheet" href="/ui/css/styles.css"></head>
-<body><script src="/ui/js/components.js"></script>
-<script>
-layout("Dashboard",
-  "<div id=\"dashboard-state\" class=\"state loading\">Loading dashboard...</div>"+
-  "<div id=\"dashboard-grid\" class=\"grid\"></div>"+
-  "<div class=\"card\"><h3>Recent Transactions</h3><div id=\"recent-sales\"></div></div>",
-  "Dashboard"
-);
-const state=document.getElementById("dashboard-state");
-const grid=document.getElementById("dashboard-grid");
-const recent=document.getElementById("recent-sales");
-const token=localStorage.getItem("schoolSupplyToken");
-if(!token){
-  state.className="state error"; state.innerHTML="Please sign in to view live dashboard data. <a href='/ui/login.html'>Sign in</a>"; 
-} else {
-  fetch("/dashboard",{headers:{"Authorization":"Bearer "+token}})
-    .then(async function(res){const json=await res.json();if(!res.ok)throw new Error(json.error||"Dashboard unavailable");return json;})
-    .then(function(json){
-      state.className="state hidden";
-      const d=json.data;
-      grid.innerHTML=[
-        ["Products",d.totalProducts],["Sales", "₱"+Number(d.totalSales||0).toFixed(2)],
-        ["Low Stock",d.lowStockItems],["Transactions",d.totalTransactions]
-      ].map(function(x){return "<div class='card stat'><span class='muted'>"+x[0]+"</span><strong>"+x[1]+"</strong></div>";}).join("");
-      if(!d.recentSales.length){recent.innerHTML="<p class='muted'>No sales transactions yet.</p>";return;}
-      recent.innerHTML="<table class='table'><thead><tr><th>Transaction</th><th>Total</th><th>Date</th></tr></thead><tbody>"+
-        d.recentSales.map(function(s){return "<tr><td>#"+s.id+"</td><td>₱"+Number(s.total).toFixed(2)+"</td><td>"+new Date(s.transactionDate).toLocaleString()+"</td></tr>";}).join("")+
-        "</tbody></table>";
-    })
-    .catch(function(error){state.className="state error";state.textContent=error.message||"Unable to load dashboard.";});
-}
-</script></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>School Supply Store</title></head>
+<body><script>
+(function(){var token=localStorage.getItem("schoolSupplyToken");location.replace(token?"/ui/dashboard.html":"/ui/login.html");})();
+</script><noscript>Please enable JavaScript to continue.</noscript></body></html>
