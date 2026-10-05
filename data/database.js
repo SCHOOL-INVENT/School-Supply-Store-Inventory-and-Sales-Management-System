@@ -9,6 +9,8 @@ const config = {
   database: databaseName,
   waitForConnections: true,
   connectionLimit: Number(process.env.DB_CONNECTION_LIMIT || 10),
+  maxIdle: process.env.NODE_ENV === "test" ? 0 : Number(process.env.DB_MAX_IDLE || 5),
+  idleTimeout: process.env.NODE_ENV === "test" ? 1000 : Number(process.env.DB_IDLE_TIMEOUT || 60000),
   queueLimit: 0
 };
 
