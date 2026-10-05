@@ -1,9 +1,13 @@
 const express = require("express");
+const path = require("path");
 const app = express();
+const uiRoot = path.join(__dirname, "public", "ui");
+const cssRoot = path.join(__dirname, "public", "css");
 
 app.use(express.json({ limit: "1mb" }));
-app.use("/ui/css", express.static("public/css"));
-app.use("/ui", express.static("public/ui"));
+app.use("/ui/css", express.static(cssRoot));
+app.use("/ui", express.static(uiRoot));
+app.get("/ui/", (req, res) => res.sendFile(path.join(uiRoot, "index.html")));
 
 app.get("/", (req, res) => res.status(200).json({
   status: 200,
