@@ -42,6 +42,7 @@ button{cursor:pointer}
 .card-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px}
 .card-title h3{margin:0;font-size:18px}
 .grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px}
+.grid > .card:not(.stat-card){grid-column:span 6}
 .stat-card{grid-column:span 3;padding:20px;position:relative;overflow:hidden}
 .stat-card .stat-icon{width:46px;height:46px;border-radius:14px;background:#eef3ff;color:var(--primary);display:grid;place-items:center;margin-bottom:14px}
 .stat-card .muted{font-size:13px}
@@ -149,6 +150,7 @@ button{cursor:pointer}
   .main{padding:14px}
   .grid{gap:12px}
   .stat-card{grid-column:span 12}
+  .grid > .card:not(.stat-card){grid-column:span 12}
   .card{padding:17px;border-radius:16px}
   .topbar{margin-bottom:18px}
   .topbar-actions{width:100%}
