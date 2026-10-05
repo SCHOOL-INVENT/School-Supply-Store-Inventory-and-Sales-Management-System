@@ -12,10 +12,6 @@ const config = {
   queueLimit: 0
 };
 
-const serverPool = mysql.createPool({
-  host: config.host, port: config.port, user: config.user, password: config.password,
-  waitForConnections: true, connectionLimit: config.connectionLimit, queueLimit: 0
-});
 const pool = mysql.createPool(config);
 let initialized = false;
 let initPromise = null;
@@ -28,7 +24,6 @@ async function initDatabase() {
   if (initialized) return;
   if (initPromise) return initPromise;
   initPromise = (async () => {
-    await serverPool.query(`CREATE DATABASE IF NOT EXISTS \\`${databaseName}\\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await pool.query(`CREATE TABLE IF NOT EXISTS users (id INT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(100) NOT NULL UNIQUE, password_hash CHAR(64) NOT NULL, role ENUM('admin','staff','owner') NOT NULL DEFAULT 'staff', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB`);
     await pool.query(`CREATE TABLE IF NOT EXISTS suppliers (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, contact VARCHAR(100) NOT NULL, email VARCHAR(150) NULL, address VARCHAR(255) NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB`);
     await pool.query(`CREATE TABLE IF NOT EXISTS customers (id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(100) NOT NULL, contact VARCHAR(100) NOT NULL, email VARCHAR(150) NULL, address VARCHAR(255) NULL, created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB`);
@@ -105,4 +100,4 @@ async function resetTestData() {
   await seed();
 }
 
-module.exports = { pool, serverPool, initDatabase, withConnection, withTransaction, statusFor, config, resetTestData };
+module.exports = { pool, initDatabase, withConnection, withTransaction, statusFor, config, resetTestData };
