@@ -1,5 +1,11 @@
-const test=require("node:test");const assert=require("node:assert/strict");const request=require("supertest");const app=require("../app");const products=require("../data/productsData");const customers=require("../data/customersData");const sales=require("../data/salesData");
-test.beforeEach(()=>{products.seedForTests();customers.clearForTests();customers.save({name:"Test Customer",contact:"09000000000"});sales.clearForTests();});
-test("POST /sales creates a transaction, calculates total, and reduces inventory",async()=>{const r=await request(app).post("/sales").send({customerId:1,items:[{productId:1,quantity:2}]});assert.equal(r.status,201);assert.equal(r.body.data.total,30);assert.equal(r.body.data.items[0].lineTotal,30);assert.equal(products.findById(1).quantity,118);});
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const request=require("supertest");
+const app=require("../app");
+const products=require("../data/productsData");
+const customers=require("../data/customersData");
+const {resetDatabase}=require("./test-setup");
+test.beforeEach(async()=>{await resetDatabase();});
+test("POST /sales creates a transaction, calculates total, and reduces inventory",async()=>{const r=await request(app).post("/sales").send({customerId:1,items:[{productId:1,quantity:2}]});assert.equal(r.status,201);assert.equal(r.body.data.total,30);assert.equal(r.body.data.items[0].lineTotal,30);const p=await products.findById(1);assert.equal(p.quantity,118);});
 test("POST /sales rejects overselling with 422",async()=>{const r=await request(app).post("/sales").send({items:[{productId:1,quantity:999}]});assert.equal(r.status,422);});
-test("sales CRUD supports list, get, update, and delete with stock restoration",async()=>{const created=await request(app).post("/sales").send({items:[{productId:1,quantity:2}]});const id=created.body.data.id;assert.equal((await request(app).get("/sales")).status,200);assert.equal((await request(app).get(`/sales/${id}`)).status,200);const updated=await request(app).put(`/sales/${id}`).send({items:[{productId:1,quantity:3}]});assert.equal(updated.status,200);assert.equal(products.findById(1).quantity,117);const deleted=await request(app).delete(`/sales/${id}`);assert.equal(deleted.status,200);assert.equal(products.findById(1).quantity,120);});
+test("sales CRUD supports list, get, update, and delete with stock restoration",async()=>{const created=await request(app).post("/sales").send({items:[{productId:1,quantity:2}]});assert.equal(created.status,201);const id=created.body.data.id;assert.equal((await request(app).get("/sales")).status,200);assert.equal((await request(app).get("/sales/"+id)).status,200);const updated=await request(app).put("/sales/"+id).send({items:[{productId:1,quantity:3}]});assert.equal(updated.status,200);let p=await products.findById(1);assert.equal(p.quantity,117);const deleted=await request(app).delete("/sales/"+id);assert.equal(deleted.status,200);p=await products.findById(1);assert.equal(p.quantity,120);});
