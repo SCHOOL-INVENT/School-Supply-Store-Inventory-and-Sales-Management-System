@@ -1,6 +1,13 @@
-const test=require("node:test");const assert=require("node:assert/strict");const request=require("supertest");const app=require("../app");const products=require("../data/productsData");const customers=require("../data/customersData");const suppliers=require("../data/suppliersData");const sales=require("../data/salesData");
-test.beforeEach(()=>{products.seedForTests();customers.clearForTests();suppliers.clearForTests();sales.clearForTests();});
-async function adminToken(){const r=await request(app).post("/auth/login").send({username:"admin",password:"admin123"});assert.equal(r.status,200);return r.body.data.token;}\nasync function crud(path,body){const c=await request(app).post(path).send(body);assert.equal(c.status,201);const id=c.body.data.id;assert.equal((await request(app).get(`${path}/${id}`)).status,200);assert.equal((await request(app).put(`${path}/${id}`).send(body)).status,200);const token=await adminToken();const d=await request(app).delete(`${path}/${id}`).set("Authorization",`Bearer ${token}`);assert.equal(d.status,200);}
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const request=require("supertest");
+const app=require("../app");
+const products=require("../data/productsData");
+const {resetDatabase}=require("./test-setup");
+
+test.beforeEach(async()=>{await resetDatabase();});
+async function adminToken(){const r=await request(app).post("/auth/login").send({username:"admin",password:"admin123"});assert.equal(r.status,200);return r.body.data.token;}
+async function crud(path,body){const c=await request(app).post(path).send(body);assert.equal(c.status,201);const id=c.body.data.id;assert.equal((await request(app).get(path+"/"+id)).status,200);assert.equal((await request(app).put(path+"/"+id).send(body)).status,200);const token=await adminToken();const d=await request(app).delete(path+"/"+id).set("Authorization","Bearer "+token);assert.equal(d.status,200);}
 test("products CRUD",async()=>crud("/products",{name:"Marker",category:"Writing",quantity:20,unitPrice:12,status:"in-stock"}));
 test("customers CRUD",async()=>crud("/customers",{name:"New Customer",contact:"09123456789",email:"new@example.com"}));
 test("suppliers CRUD",async()=>crud("/suppliers",{name:"New Supplier",contact:"09123456789",email:"supplier@example.com"}));
