@@ -1,9 +1,52 @@
-const {db}=require("./database");
-const map=r=>r&&({id:r.id,name:r.name,contact:r.contact,email:r.email,address:r.address});
-const findAll=()=>db.prepare("SELECT * FROM suppliers ORDER BY id").all().map(map);
-const findById=id=>map(db.prepare("SELECT * FROM suppliers WHERE id=?").get(Number(id)));
-const save=x=>{const r=db.prepare("INSERT INTO suppliers(name,contact,email,address) VALUES(?,?,?,?)").run(x.name,x.contact,x.email??null,x.address??null);return findById(r.lastInsertRowid);};
-const updateById=(id,c)=>{if(!findById(id))return null;db.prepare("UPDATE suppliers SET name=?,contact=?,email=?,address=? WHERE id=?").run(c.name,c.contact,c.email??null,c.address??null,Number(id));return findById(id);};
-const deleteById=id=>{const x=findById(id);if(!x)return null;db.prepare("DELETE FROM suppliers WHERE id=?").run(Number(id));return x;};
-const clearForTests=()=>db.prepare("DELETE FROM suppliers").run();
-module.exports={findAll,findById,save,updateById,deleteById,clearForTests};
+const { pool, initDatabase } = require("./database");
+
+const map = row => row && ({
+  id: row.id,
+  name: row.name,
+  contact: row.contact,
+  email: row.email,
+  address: row.address
+});
+
+async function findAll() {
+  await initDatabase();
+  const [rows] = await pool.execute("SELECT * FROM suppliers ORDER BY id");
+  return rows.map(map);
+}
+
+async function findById(id, connection = pool) {
+  await initDatabase();
+  const [rows] = await connection.execute("SELECT * FROM suppliers WHERE id = ?", [Number(id)]);
+  return map(rows[0]);
+}
+
+async function save(item, connection = pool) {
+  await initDatabase();
+  const [result] = await connection.execute(
+    "INSERT INTO suppliers(name,contact,email,address) VALUES(?,?,?,?)",
+    [item.name.trim(), item.contact.trim(), item.email ?? null, item.address ?? null]
+  );
+  return findById(result.insertId, connection);
+}
+
+async function updateById(id, changes, connection = pool) {
+  const old = await findById(id, connection);
+  if (!old) return null;
+  const item = { ...old, ...changes };
+  await connection.execute(
+    "UPDATE suppliers SET name=?,contact=?,email=?,address=? WHERE id=?",
+    [String(item.name).trim(), String(item.contact).trim(), item.email ?? null, item.address ?? null, Number(id)]
+  );
+  return findById(id, connection);
+}
+
+async function deleteById(id, connection = pool) {
+  const item = await findById(id, connection);
+  if (!item) return null;
+  await connection.execute("DELETE FROM suppliers WHERE id=?", [Number(id)]);
+  return item;
+}
+
+async function clearForTests() { await initDatabase(); await pool.execute("DELETE FROM suppliers"); }
+
+module.exports = { findAll, findById, save, updateById, deleteById, clearForTests };
