@@ -1,16 +1,16 @@
 {
   "name": "school-supply-store-inventory-and-sales-management-system",
-  "version": "2.0.0",
+  "version": "3.0.0",
   "private": true,
-  "description": "Node.js/Express school supply inventory and sales management system with persistent SQLite database.",
+  "description": "Node.js/Express school supply inventory and sales management system backed by MySQL.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
-    "better-sqlite3": "^11.10.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "mysql2": "^3.14.4"
   },
   "devDependencies": {
     "supertest": "^7.1.4"
