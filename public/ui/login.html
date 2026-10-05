@@ -1,8 +1,46 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sign In</title><link rel="stylesheet" href="/ui/css/styles.css"></head><body><div class="main login"><div class="card login-card"><h2>Sign in</h2><p class="muted">Use your store account to manage protected actions.</p><div id="form-status" class="form-message"></div><form id="login-form"><div class="field"><label>Username</label><input id="username" required></div><div class="field"><label>Password</label><input id="password" type="password" required></div><div class="actions"><button class="button" type="submit">Sign in</button><a class="button secondary" href="/ui/">Cancel</a></div></form></div></div><script src="/ui/js/feedback.js"></script><script>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign In — School Supply Store</title><link rel="stylesheet" href="/ui/css/styles.css"></head>
+<body class="login-page">
+<div class="login-shell">
+  <section class="login-showcase">
+    <div class="brand"><div class="brand-mark">S</div><div class="brand-text"><strong>School Supply Store</strong><span>Inventory & Sales Management</span></div></div>
+    <h1>Manage your school supply store with confidence.</h1>
+    <p>Keep products, suppliers, customers, sales, and stock movements organized in one responsive workspace backed by MySQL.</p>
+    <div class="login-points">
+      <div class="login-point"><div class="brand-mark" style="width:38px;height:38px;font-size:16px">✓</div><div><strong>Live inventory</strong><span>Track quantities and low-stock items in real time.</span></div></div>
+      <div class="login-point"><div class="brand-mark" style="width:38px;height:38px;font-size:16px">✓</div><div><strong>Sales control</strong><span>Record transactions and update stock automatically.</span></div></div>
+      <div class="login-point"><div class="brand-mark" style="width:38px;height:38px;font-size:16px">✓</div><div><strong>Responsive everywhere</strong><span>Use the system on desktop, tablet, or phone-sized screens.</span></div></div>
+    </div>
+  </section>
+  <section class="login-form">
+    <div class="login-card">
+      <h2>Welcome back</h2>
+      <p class="subtitle">Sign in to access your store dashboard.</p>
+      <div id="form-status" class="form-message"></div>
+      <form id="login-form">
+        <div class="field"><label for="username">Username</label><input id="username" name="username" autocomplete="username" placeholder="Enter username" required></div>
+        <div class="field"><label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter password" required></div>
+        <button class="button" type="submit">Sign in</button>
+      </form>
+      <div class="login-footnote">School Supply Store • MySQL Edition</div>
+    </div>
+  </section>
+</div>
+<script src="/ui/js/components.js"></script><script src="/ui/js/feedback.js"></script>
+<script>
 const form=document.getElementById("login-form"),box=document.getElementById("form-status"),button=form.querySelector("button");
-form.addEventListener("submit",async function(e){e.preventDefault();button.disabled=true;UIFeedback.loading(box,"Signing in...");
-try{const res=await fetch("/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:document.getElementById("username").value,password:document.getElementById("password").value})});let json={};try{json=await res.json()}catch(_){}
-if(!res.ok){UIFeedback.error(box,UIFeedback.humanError(res,json));button.disabled=false;return}
-localStorage.setItem("schoolSupplyToken",json.data.token);localStorage.setItem("schoolSupplyUser",JSON.stringify(json.data.user));UIFeedback.success(box,"Signed in successfully. Redirecting...");setTimeout(function(){location.href="/ui/"},400)
-}catch(e){UIFeedback.error(box,"We could not reach the server. Check your connection and try again.");button.disabled=false}});
-</script></body></html>
+form.addEventListener("submit",async function(e){
+ e.preventDefault(); button.disabled=true; button.textContent="Signing in..."; UIFeedback.loading(box,"Checking your account...");
+ try{
+  const res=await fetch("/auth/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:document.getElementById("username").value,password:document.getElementById("password").value})});
+  let json={};try{json=await res.json();}catch(_){}
+  if(!res.ok){UIFeedback.error(box,UIFeedback.humanError(res,json));button.disabled=false;button.textContent="Sign in";return;}
+  localStorage.setItem("schoolSupplyToken",json.data.token);
+  localStorage.setItem("schoolSupplyUser",JSON.stringify(json.data.user));
+  UIFeedback.success(box,"Signed in successfully. Opening dashboard...");
+  setTimeout(function(){location.replace("/ui/dashboard.html");},250);
+ }catch(e){UIFeedback.error(box,"We could not reach the server. Please check the connection.");button.disabled=false;button.textContent="Sign in";}
+});
+</script>
+</body></html>
