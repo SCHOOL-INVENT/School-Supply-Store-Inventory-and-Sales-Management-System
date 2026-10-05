@@ -69,6 +69,12 @@ async function withConnection(fn) {
   try { return await fn(connection); } finally { connection.release(); }
 }
 
+async function closeDatabase() {
+  initialized = false;
+  initPromise = null;
+  await pool.end();
+}
+
 async function withTransaction(fn) {
   return withConnection(async connection => {
     await connection.beginTransaction();
@@ -102,4 +108,4 @@ async function resetTestData() {
   await seed();
 }
 
-module.exports = { pool, initDatabase, withConnection, withTransaction, statusFor, config, resetTestData };
+module.exports = { pool, initDatabase, withConnection, withTransaction, closeDatabase, statusFor, config, resetTestData };
