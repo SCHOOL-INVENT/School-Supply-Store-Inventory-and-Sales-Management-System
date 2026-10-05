@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard — School Supply Store</title><link rel="stylesheet" href="/ui/css/styles.css"></head><body>
+<script src="/ui/js/components.js"></script><script src="/ui/js/feedback.js"></script>
+<script>
+layout("Dashboard",
+"<div id='dashboard-state' class='state loading'>Loading your dashboard...</div>"+
+"<div id='dashboard-grid' class='grid'></div>"+
+"<div class='card'><div class='card-title'><h3>Recent Transactions</h3><a class='button small secondary' href='/ui/sales.html'>View all sales</a></div><div id='recent-sales'></div></div>"+
+"<div class='card'><div class='card-title'><h3>Quick actions</h3></div><div class='toolbar'><a class='button' href='/ui/products-create.html'>"+icon("plus")+" Add product</a><a class='button secondary' href='/ui/sales-create.html'>"+icon("plus")+" Record sale</a><a class='button secondary' href='/ui/stock.html'>"+icon("stock")+" Manage stock</a></div></div>",
+"Dashboard",
+"Live overview of your inventory and sales activity."
+);
+const state=document.getElementById("dashboard-state"),grid=document.getElementById("dashboard-grid"),recent=document.getElementById("recent-sales");
+const token=localStorage.getItem("schoolSupplyToken");
+if(!token){location.replace("/ui/login.html");}
+else{
+ fetch("/dashboard",{headers:{"Authorization":"Bearer "+token}})
+ .then(async function(res){const json=await res.json();if(res.status===401){localStorage.removeItem("schoolSupplyToken");localStorage.removeItem("schoolSupplyUser");location.replace("/ui/login.html");return null;}if(!res.ok)throw new Error(json.error||"Dashboard unavailable");return json;})
+ .then(function(json){if(!json)return;const d=json.data;state.className="hidden";
+ const stats=[["products","Products",d.totalProducts,"Total items in catalog"],["sales","Sales","₱"+Number(d.totalSales||0).toFixed(2),"Cumulative sales"],["stock","Low stock",d.lowStockItems,"Items at or below threshold"],["sales","Transactions",d.totalTransactions,"Recorded transactions"]];
+ grid.innerHTML=stats.map(function(s){return "<div class='card stat-card'><div class='stat-icon'>"+icon(s[0])+"</div><span class='muted'>"+s[1]+"</span><strong>"+s[2]+"</strong><small>"+s[3]+"</small></div>";}).join("");
+ if(!d.recentSales.length){recent.innerHTML="<div class='empty'>No sales transactions yet.</div>";return;}
+ recent.innerHTML="<div class='table-wrap'><table class='table'><thead><tr><th>Transaction</th><th>Total</th><th>Date</th></tr></thead><tbody>"+d.recentSales.map(function(s){return "<tr><td><strong>#"+s.id+"</strong></td><td>₱"+Number(s.total).toFixed(2)+"</td><td>"+new Date(s.transactionDate).toLocaleString()+"</td></tr>";}).join("")+"</tbody></table></div>";
+ })
+ .catch(function(error){state.className="state error";state.textContent=error.message||"Unable to load dashboard."});
+}
+</script></body></html>
