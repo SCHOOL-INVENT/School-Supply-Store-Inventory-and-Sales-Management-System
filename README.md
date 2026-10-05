@@ -29,11 +29,11 @@ Replace the placeholders below with the five team members and starting roles.
 
 | Member | Starting role |
 |---|---|
-| Team Member 1 | Repo Lead |
-| Team Member 2 | Board Lead |
-| Team Member 3 | Scribe |
-| Team Member 4 | Builder |
-| Team Member 5 | Builder |
+| Jhaira Nontiagudo | Repo Lead |
+| Regine Casida | Board Lead |
+| Alex Aclaracion | Scribe |
+| Jendylou Lapad | Builder |
+
 
 ### Git collaboration loop
 
