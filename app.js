@@ -23,6 +23,7 @@ app.use("/suppliers", require("./controllers/routes/suppliers"));
 app.use("/sales", require("./controllers/routes/sales"));
 app.use("/orders", require("./controllers/routes/sales"));
 app.use("/reports", require("./controllers/routes/reports"));
+app.use("/stock", require("./controllers/routes/stock"));
 
 app.use((req, res) => res.status(404).json({
   status: 404,
