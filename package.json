@@ -5,7 +5,7 @@
   "description": "Node.js/Express school supply inventory and sales management system backed by MySQL.",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node --env-file=.env server.js",
     "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
