@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 
 app.use(express.json({ limit: "1mb" }));
+// The UI pages live in public/ui while the shared stylesheet lives in public/css.
+app.use("/ui/css", express.static("public/css"));
 app.use("/ui", express.static("public/ui"));
 
 app.get("/", (req, res) => res.status(200).json({
