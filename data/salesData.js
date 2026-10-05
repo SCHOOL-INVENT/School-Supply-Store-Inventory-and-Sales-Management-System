@@ -1,9 +1,50 @@
-const {db}=require("./database");
-const mapSale=r=>{if(!r)return null;const items=db.prepare("SELECT si.product_id productId,p.name,si.quantity,si.unit_price unitPrice,si.line_total lineTotal FROM sale_items si JOIN products p ON p.id=si.product_id WHERE si.sale_id=? ORDER BY si.id").all(r.id);return {id:r.id,customerId:r.customer_id,userId:r.user_id,items,total:r.total,transactionDate:r.transaction_date};};
-const findAll=()=>db.prepare("SELECT * FROM sales ORDER BY id").all().map(mapSale);
-const findById=id=>mapSale(db.prepare("SELECT * FROM sales WHERE id=?").get(Number(id)));
-const save=sale=>{const tx=db.transaction(()=>{const r=db.prepare("INSERT INTO sales(customer_id,total,transaction_date) VALUES(?,?,?)").run(sale.customerId??null,sale.total,sale.transactionDate);const ins=db.prepare("INSERT INTO sale_items(sale_id,product_id,quantity,unit_price,line_total) VALUES(?,?,?,?,?)");for(const i of sale.items)ins.run(r.lastInsertRowid,i.productId,i.quantity,i.unitPrice,i.lineTotal);return r.lastInsertRowid;});return findById(tx());};
-const updateById=(id,sale)=>{if(!findById(id))return null;const tx=db.transaction(()=>{db.prepare("DELETE FROM sale_items WHERE sale_id=?").run(Number(id));db.prepare("UPDATE sales SET customer_id=?,total=?,transaction_date=? WHERE id=?").run(sale.customerId??null,sale.total,sale.transactionDate,Number(id));const ins=db.prepare("INSERT INTO sale_items(sale_id,product_id,quantity,unit_price,line_total) VALUES(?,?,?,?,?)");for(const i of sale.items)ins.run(Number(id),i.productId,i.quantity,i.unitPrice,i.lineTotal);});tx();return findById(id);};
-const deleteById=id=>{const x=findById(id);if(!x)return null;db.prepare("DELETE FROM sales WHERE id=?").run(Number(id));return x;};
-const clearForTests=()=>db.prepare("DELETE FROM sales").run();
-module.exports={findAll,findById,save,updateById,deleteById,clearForTests};
+const { pool, initDatabase } = require("./database");
+
+function mapItem(row) {
+  return {
+    productId: Number(row.product_id),
+    name: row.name,
+    quantity: Number(row.quantity),
+    unitPrice: Number(row.unit_price),
+    lineTotal: Number(row.line_total)
+  };
+}
+
+function mapSale(row, items) {
+  return {
+    id: Number(row.id),
+    customerId: row.customer_id == null ? null : Number(row.customer_id),
+    userId: row.user_id == null ? null : Number(row.user_id),
+    items,
+    total: Number(row.total),
+    transactionDate: row.transaction_date
+  };
+}
+
+async function findAll() {
+  await initDatabase();
+  const [sales] = await pool.execute("SELECT * FROM sales ORDER BY id");
+  if (!sales.length) return [];
+  const [items] = await pool.execute(
+    "SELECT si.sale_id, si.product_id, p.name, si.quantity, si.unit_price, si.line_total FROM sale_items si JOIN products p ON p.id=si.product_id ORDER BY si.sale_id, si.id"
+  );
+  const grouped = new Map();
+  for (const item of items) {
+    if (!grouped.has(Number(item.sale_id))) grouped.set(Number(item.sale_id), []);
+    grouped.get(Number(item.sale_id)).push(mapItem(item));
+  }
+  return sales.map(row => mapSale(row, grouped.get(Number(row.id)) || []));
+}
+
+async function findById(id, connection = pool) {
+  await initDatabase();
+  const [sales] = await connection.execute("SELECT * FROM sales WHERE id=?", [Number(id)]);
+  if (!sales[0]) return null;
+  const [items] = await connection.execute(
+    "SELECT si.product_id, p.name, si.quantity, si.unit_price, si.line_total FROM sale_items si JOIN products p ON p.id=si.product_id WHERE si.sale_id=? ORDER BY si.id",
+    [Number(id)]
+  );
+  return mapSale(sales[0], items.map(mapItem));
+}
+
+module.exports = { findAll, findById };
