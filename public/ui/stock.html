@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Stock Management</title><link rel="stylesheet" href="/ui/css/styles.css"></head>
+<body>
+<script src="/ui/js/components.js"></script>
+<script src="/ui/js/feedback.js"></script>
+<script>
+layout("Stock Management",
+"<div class='grid'>"+
+"<div class='card'><h3>Receive Stock</h3><form id='stock-in'><div class='field'><label>Product ID</label><input name='productId' type='number' min='1' required></div><div class='field'><label>Quantity</label><input name='quantity' type='number' min='1' required></div><div class='field'><label>Reference</label><input name='reference' maxlength='255' placeholder='Purchase order / delivery'></div><div id='in-status' class='form-message'></div><button class='button' type='submit'>Add Stock</button></form></div>"+
+"<div class='card'><h3>Release Stock</h3><form id='stock-out'><div class='field'><label>Product ID</label><input name='productId' type='number' min='1' required></div><div class='field'><label>Quantity</label><input name='quantity' type='number' min='1' required></div><div class='field'><label>Reference</label><input name='reference' maxlength='255' placeholder='Manual stock release'></div><div id='out-status' class='form-message'></div><button class='button' type='submit'>Remove Stock</button></form></div>"+
+"</div><div class='card'><h3>Stock Transaction History</h3><div id='stock-state' class='state loading'>Loading...</div><div id='stock-table'></div></div>",
+"Stock");
+</script>
+<script>
+const token=localStorage.getItem("schoolSupplyToken");
+function auth(){return token?{"Authorization":"Bearer "+token,"Content-Type":"application/json"}:{"Content-Type":"application/json"};}
+function submitStock(form,type,box){
+ form.addEventListener("submit",async function(e){e.preventDefault();if(!token){UIFeedback.error(box,"Please sign in before changing stock.");return;}
+ const body={productId:Number(form.productId.value),quantity:Number(form.quantity.value),reference:form.reference.value};
+ UIFeedback.loading(box,"Saving stock movement...");
+ try{const r=await fetch("/stock/"+type,{method:"POST",headers:auth(),body:JSON.stringify(body)});const j=await r.json();if(!r.ok){UIFeedback.error(box,j.error||"Unable to update stock.");return;}UIFeedback.success(box,"Stock updated successfully. New quantity: "+j.data.product.quantity);form.reset();loadHistory();}
+ catch(e){UIFeedback.error(box,"We could not reach the server. Check your connection and try again.");}
+ });
+}
+submitStock(document.getElementById("stock-in"),"in",document.getElementById("in-status"));
+submitStock(document.getElementById("stock-out"),"out",document.getElementById("out-status"));
+async function loadHistory(){
+ const state=document.getElementById("stock-state"),root=document.getElementById("stock-table");
+ if(!token){state.className="state error";state.textContent="Please sign in to view stock history.";return;}
+ state.className="state loading";state.textContent="Loading...";
+ try{const r=await fetch("/stock/transactions?limit=100",{headers:auth()});const j=await r.json();if(!r.ok)throw new Error(j.error||"Unable to load history");
+ const rows=j.data||[];if(!rows.length){state.className="state";state.textContent="No stock movements recorded yet.";root.innerHTML="";return;}
+ state.className="state hidden";
+ root.innerHTML="<table class='table'><thead><tr><th>Product</th><th>Type</th><th>Quantity</th><th>Reference</th><th>Date</th></tr></thead><tbody>"+
+ rows.map(function(x){return "<tr><td>#"+x.productId+" "+x.productName+"</td><td>"+x.type+"</td><td>"+x.quantity+"</td><td>"+(x.reference||"—")+"</td><td>"+new Date(x.createdAt).toLocaleString()+"</td></tr>";}).join("")+
+ "</tbody></table>";
+ }catch(e){state.className="state error";state.textContent=e.message||"Unable to load stock history.";}
+}
+loadHistory();
+</script>
+</body></html>
