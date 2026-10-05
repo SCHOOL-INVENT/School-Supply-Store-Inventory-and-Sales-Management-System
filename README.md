@@ -129,3 +129,62 @@ The Week 7 UI connects the existing Phase 2 controllers to the Week 6 forms. Rea
 - `public/ui/login.html` — sign-in UI for obtaining the existing Bearer token used by protected actions.
 
 Week 8 extends the Week 7 Fetch interface so loading, success, validation, not-found, server, authorization, and network failures are visible and human-readable. Destructive actions require confirmation.
+
+
+## MySQL Database — Current Application
+
+The application is now backed by MySQL 8+ instead of the previous local SQLite store. The Node.js application uses the mysql2 Promise API with a connection pool, parameterized SQL statements, and database transactions for inventory-changing operations.
+
+### Local setup
+
+1. Install Node.js 20+ and MySQL 8+.
+2. Copy .env.example to .env and set DB_HOST, DB_PORT, DB_NAME, DB_USER, and DB_PASSWORD.
+3. Create the database with `CREATE DATABASE school_supply_store;` and run `database/schema.sql`. The application will create missing tables automatically.
+4. Run:
+
+```bash
+npm install
+npm start
+```
+
+5. Open http://localhost:3000/ui/.
+
+Demo accounts:
+- Admin: `admin` / `admin123`
+- Staff: `staff` / `staff123`
+
+### Main API
+
+- `POST /auth/login`
+- `GET /dashboard`
+- `GET/POST/PUT/DELETE /products`
+- `GET/POST/PUT/DELETE /suppliers`
+- `GET/POST/PUT/DELETE /customers`
+- `GET/POST/PUT/DELETE /sales`
+- `POST /stock/in`
+- `POST /stock/out`
+- `GET /stock/transactions`
+- `GET /reports/inventory`
+- `GET /reports/sales`
+- `GET /reports/low-stock`
+- `GET /reports/transactions`
+
+### Inventory behavior
+
+Creating a sale calculates totals from current product prices and decreases inventory. Editing a sale restores the previous quantities before applying the replacement transaction. Deleting a sale restores its inventory. Manual stock-in and stock-out actions also create stock transaction records.
+
+### Tests
+
+CI starts a MySQL 8 service and runs:
+
+```bash
+npm install
+npm test
+```
+
+npm install is intentionally used in CI so package.json and package-lock.json can be reconciled after the database-driver migration.
+
+### Database files
+
+- `database/schema.sql` — repeatable MySQL schema and demo seed data.
+- `.env.example` — local MySQL configuration template.
