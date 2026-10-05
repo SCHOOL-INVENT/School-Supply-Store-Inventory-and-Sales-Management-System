@@ -9,30 +9,40 @@ function businessError(status, message, field = null) {
 }
 
 async function resolveItems(connection, body) {
-  const items = [];
+  const totals = new Map();
   for (const input of body.items) {
+    const productId = Number(input.productId);
+    const quantity = Number(input.quantity);
+    totals.set(productId, (totals.get(productId) || 0) + quantity);
+  }
+
+  const locked = new Map();
+  for (const [productId, requestedQuantity] of totals) {
     const [rows] = await connection.execute(
       "SELECT id,name,quantity,unit_price FROM products WHERE id=? FOR UPDATE",
-      [Number(input.productId)]
+      [productId]
     );
     const product = rows[0];
     if (!product) throw businessError(404, "Product not found", "items");
-    const quantity = Number(input.quantity);
-    if (Number(product.quantity) < quantity) {
+    if (Number(product.quantity) < requestedQuantity) {
       throw businessError(422, "Insufficient stock for " + product.name, "items");
     }
+    locked.set(productId, product);
+  }
+
+  return body.items.map(input => {
+    const product = locked.get(Number(input.productId));
+    const quantity = Number(input.quantity);
     const unitPrice = Number(product.unit_price);
-    items.push({
+    return {
       productId: Number(product.id),
       name: product.name,
       quantity,
       unitPrice,
       lineTotal: Number((unitPrice * quantity).toFixed(2))
-    });
-  }
-  return items;
+    };
+  });
 }
-
 async function validateCustomer(connection, customerId) {
   if (customerId === undefined || customerId === null) return null;
   const [rows] = await connection.execute("SELECT id FROM customers WHERE id=?", [Number(customerId)]);
