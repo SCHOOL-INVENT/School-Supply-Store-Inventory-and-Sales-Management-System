@@ -29,11 +29,15 @@ function layout(title,body,active,subtitle){
   const nav=names.map(function(item){
     return "<a href='"+item[1]+"' class='"+(item[0]===active?"active":"")+"'><span class='nav-icon'>"+icon(item[2])+"</span><span>"+item[0]+"</span></a>";
   }).join("");
+  var authToken=localStorage.getItem("schoolSupplyToken");
+  var authLink=authToken
+    ? "<a href='#' id='logout-link'><span class='nav-icon'>"+icon("login")+"</span><span>Log out</span></a>"
+    : "<a href='/ui/login.html'><span class='nav-icon'>"+icon("login")+"</span><span>Sign in</span></a>";
   document.body.innerHTML=
     "<div class='app'>"+
       "<aside id='sidebar' class='sidebar'>"+
         "<div class='brand'><div class='brand-mark'>S</div><div class='brand-text'><strong>School Supply Store</strong><span>Inventory & Sales</span></div></div>"+
-        "<nav class='nav'>"+nav+"<a href='/ui/login.html'><span class='nav-icon'>"+icon("login")+"</span><span>Sign in</span></a></nav>"+
+        "<nav class='nav'>"+nav+authLink+"</nav>"+
         "<div class='sidebar-footer'>MySQL-powered management system</div>"+
       "</aside>"+
       "<main class='main'>"+
@@ -47,4 +51,11 @@ function layout(title,body,active,subtitle){
   const sidebar=document.getElementById("sidebar");
   if(menu)menu.addEventListener("click",function(){sidebar.classList.toggle("open");});
   sidebar.querySelectorAll("a").forEach(function(a){a.addEventListener("click",function(){sidebar.classList.remove("open");});});
+  var logout=document.getElementById("logout-link");
+  if(logout)logout.addEventListener("click",function(e){
+    e.preventDefault();
+    localStorage.removeItem("schoolSupplyToken");
+    localStorage.removeItem("schoolSupplyUser");
+    location.replace("/ui/login.html");
+  });
 }
