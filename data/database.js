@@ -80,4 +80,29 @@ async function withTransaction(fn) {
   });
 }
 
-module.exports = { pool, serverPool, initDatabase, withConnection, withTransaction, statusFor, config };
+async function resetTestData() {
+  await initDatabase();
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    await connection.execute("DELETE FROM stock_transactions");
+    await connection.execute("DELETE FROM sales");
+    await connection.execute("DELETE FROM sale_items");
+    await connection.execute("DELETE FROM products");
+    await connection.execute("DELETE FROM customers");
+    await connection.execute("DELETE FROM suppliers");
+    await connection.execute("ALTER TABLE suppliers AUTO_INCREMENT = 1");
+    await connection.execute("ALTER TABLE customers AUTO_INCREMENT = 1");
+    await connection.execute("ALTER TABLE products AUTO_INCREMENT = 1");
+    await connection.execute("ALTER TABLE sales AUTO_INCREMENT = 1");
+    await connection.commit();
+  } catch (error) {
+    await connection.rollback();
+    throw error;
+  } finally {
+    connection.release();
+  }
+  await seed();
+}
+
+module.exports = { pool, serverPool, initDatabase, withConnection, withTransaction, statusFor, config, resetTestData };
