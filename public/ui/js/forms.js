@@ -11,7 +11,7 @@ const button=form.querySelector("button[type=submit]");
 function message(text,type){if(window.UIFeedback)UIFeedback.show(statusBox,text,type);else{statusBox.textContent=text;statusBox.className="form-message "+(type||"");}}
 function setBusy(busy){button.disabled=busy;button.textContent=busy?(mode==="update"?"Updating...":"Saving..."):(mode==="update"?"Update "+names[entity]:"Save "+names[entity]);}
 function field(name){return form.querySelector("[name='"+name+"']");}
-function showError(err){message(err.error||"Unable to save. Please check your input.","error");var target=err.field&&field(err.field);if(target){target.classList.add("invalid");target.focus();}}
+function showError(err,res){var text=window.UIFeedback&&res?UIFeedback.humanError(res,err):(err&&err.error)||"Unable to save. Please check your input.";message(text,"error");var target=err&&err.field&&field(err.field);if(target){target.classList.add("invalid");target.focus();}}
 function clearInvalid(){form.querySelectorAll(".invalid").forEach(function(x){x.classList.remove("invalid")});}
 async function populateSelect(selectName,url,labelKey){
  const select=field(selectName);if(!select)return;
@@ -28,17 +28,18 @@ async function loadEdit(){
  if(mode!=="update")return;
  if(!id){message("Missing record ID. Open this page from an Edit link.","error");button.disabled=true;return;}
  setBusy(true);message("Loading record...","loading");
+ let notFound=false;
  try{
   const res=await fetch(API[entity]+"/"+encodeURIComponent(id));
-  const json=await res.json();
-  if(!res.ok){showError(json);if(res.status===404){button.disabled=true;}return;}
+  let json={};try{json=await res.json();}catch(_){}
+  if(!res.ok){showError(json,res);if(res.status===404){notFound=true;}return;}
   const d=json.data;
   if(entity==="Products"){field("name").value=d.name||"";field("category").value=d.category||"";field("quantity").value=d.quantity??"";field("unitPrice").value=d.unitPrice??"";field("supplierId").value=d.supplierId??"";}
   if(entity==="Suppliers"||entity==="Customers"){["name","contact","email","address"].forEach(function(k){if(field(k))field(k).value=d[k]||""});}
   if(entity==="Sales"){field("customerId").value=d.customerId||"";if(d.items&&d.items[0]){field("productId").value=d.items[0].productId||"";field("quantity").value=d.items[0].quantity||1;}}
   message("Record loaded.","success");
- }catch(e){message("We could not load this record. Check your connection and try again.","error");button.disabled=false}
- finally{setBusy(false)}
+ }catch(e){message("We could not load this record. Check your connection and try again.","error");}
+ finally{setBusy(false);if(notFound){button.disabled=true;}}
 }
 async function submit(e){
  e.preventDefault();clearInvalid();setBusy(true);message("Saving...","loading");
@@ -53,7 +54,7 @@ async function submit(e){
   if(res.ok){
    message("Saved successfully. Updating the list...","success");
    setTimeout(function(){location.href="/ui/"+entity.toLowerCase()+".html"},300);
-  }else{showError(json);setBusy(false)}
+  }else{showError(json,res);setBusy(false)}
  }catch(e){message("We could not reach the server. Check your connection and try again.","error");setBusy(false)}
 }
 form.addEventListener("submit",submit);loadOptions().then(loadEdit);
