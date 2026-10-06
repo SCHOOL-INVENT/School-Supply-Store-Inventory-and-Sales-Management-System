@@ -19,7 +19,7 @@ The school supply store needs a simple way to keep its inventory records organiz
 
 - Node.js
 - Express
-- SQLite database
+- MySQL 8+
 - GitHub
 - REST API
 
@@ -48,11 +48,11 @@ Direct pushes to `main` should be blocked after branch protection is configured.
 - [x] 4 core record types documented
 - [x] Git repository initialized
 - [x] Week 1 documentation added through a branch
-- [ ] Add all 5 collaborators
+- [ ] Verify all 5 collaborators are added
 - [ ] Enable and test main branch protection
-- [ ] Create GitHub Project board
-- [ ] Create and assign at least 4 Week 1 tickets
-- [ ] Merge the README PR after a team-member review
+- [ ] Create/verify the GitHub Project board
+- [ ] Replace remaining ownership placeholders with actual team members
+- [ ] Record review evidence for the Week 1 PR
 
 See `docs/week1/` for the Week 1 problem statement, AI brainstorming note, and board setup checklist.
 
@@ -82,7 +82,7 @@ npm install
 npm test
 ```
 
-The test suite uses Node's built-in test runner with Supertest and runs serially because the application uses a shared local SQLite database during integration tests.
+The test suite uses Node's built-in test runner with Supertest and runs serially where needed by shared database integration tests.
 
 ### Deliverable 2 evidence
 
@@ -133,7 +133,7 @@ Week 8 extends the Week 7 Fetch interface so loading, success, validation, not-f
 
 ## MySQL Database — Current Application
 
-The application is now backed by MySQL 8+ instead of the previous local SQLite store. The Node.js application uses the mysql2 Promise API with a connection pool, parameterized SQL statements, and database transactions for inventory-changing operations.
+The application is backed by MySQL 8+. The Node.js application uses the mysql2 Promise API with a connection pool, parameterized SQL statements, and database transactions for inventory-changing operations.
 
 ### Local setup
 
@@ -188,3 +188,10 @@ npm install is intentionally used in CI so package.json and package-lock.json ca
 
 - `database/schema.sql` — repeatable MySQL schema and demo seed data.
 - `.env.example` — local MySQL configuration template.
+## Current Deployment
+
+- Production host: Railway
+- Public application: https://school-supply-store-inventory-and-sales-management-production.up.railway.app/ui/
+- Production database: Railway MySQL
+
+See `docs/deployment.md` for deployment notes.
