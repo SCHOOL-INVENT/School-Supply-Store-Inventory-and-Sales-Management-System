@@ -12,12 +12,18 @@ const search=document.querySelector("[data-search]");
 let cache=[];
 
 function cell(v,k,row){
-  if(k==="unitPrice"||k==="total")return "₱"+Number(v||0).toFixed(2);
-  if(k==="quantity")return Number(v||0).toLocaleString();
-  if(k==="status")return "<span class='badge "+String(v||"") + "'>"+String(v||"").replace(/-/g," ")+"</span>";
-  if(k==="transactionDate")return v?new Date(v).toLocaleString():"—";
-  if(k==="customerId")return v==null?"Walk-in":"#"+v;
-  return v==null||v===""?"—":String(v);
+  let value;
+  if(k==="unitPrice"||k==="total")value="₱"+Number(v||0).toFixed(2);
+  else if(k==="quantity")value=Number(v||0).toLocaleString();
+  else if(k==="transactionDate")value=v?new Date(v).toLocaleString():"—";
+  else if(k==="customerId")value=v==null?"Walk-in":"#"+v;
+  else value=v==null||v===""?"—":String(v);
+  if(k==="status"){
+    const status=String(v||"").replace(/[^a-z-]/g,"");
+    const label=status.replace(/-/g," ");
+    return "<span class='badge "+escapeHtml(status)+"'>"+escapeHtml(label)+"</span>";
+  }
+  return escapeHtml(value);
 }
 function escapeHtml(v){return String(v??"").replace(/[&<>"]/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch];});}
 function render(rows){
