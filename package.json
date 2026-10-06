@@ -10,8 +10,7 @@
   },
   "dependencies": {
     "express": "^5.1.0",
-    "mysql2": "^3.14.4",
-    "dotenv": "^17.2.2"
+    "mysql2": "^3.14.4"
   },
   "devDependencies": {
     "supertest": "^7.1.4"

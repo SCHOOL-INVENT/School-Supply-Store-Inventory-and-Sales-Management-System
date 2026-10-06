@@ -1,4 +1,6 @@
-require("dotenv").config();
+const fs = require("fs");
+if (fs.existsSync(".env")) process.loadEnvFile(".env");
+
 const app = require("./app");
 const { initDatabase } = require("./data/database");
 
