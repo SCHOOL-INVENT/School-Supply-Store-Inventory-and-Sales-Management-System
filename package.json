@@ -5,12 +5,13 @@
   "description": "Node.js/Express school supply inventory and sales management system backed by MySQL.",
   "main": "server.js",
   "scripts": {
-    "start": "node --env-file=.env server.js",
+    "start": "node server.js",
     "test": "node --test --test-concurrency=1"
   },
   "dependencies": {
     "express": "^5.1.0",
-    "mysql2": "^3.14.4"
+    "mysql2": "^3.14.4",
+    "dotenv": "^17.2.2"
   },
   "devDependencies": {
     "supertest": "^7.1.4"
