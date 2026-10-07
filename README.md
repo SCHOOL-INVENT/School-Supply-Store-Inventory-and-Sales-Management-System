@@ -30,8 +30,8 @@ The school supply store needs a simple way to keep its inventory records organiz
 | Jhaira Nontiagudo | jhairamonteagudo597-eng | Repo Lead |
 | Regine Casida | casidaregine123-byte | Board Lead |
 | Alex Aclaracion | aaclaracionjr-prog | Scribe |
-| Jendylou Lapad | GitHub username not verified | Builder |
-| Lyndel | lyndeloulapad-design | Builder |
+| Lynde Lou D.Lapad | GitHub username not verified | Builder |
+| Lynde | lyndeloulapad-design | Builder |
 
 
 ### Git collaboration loop
