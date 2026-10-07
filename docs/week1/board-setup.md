@@ -23,3 +23,16 @@ A ticket is not complete for the course requirement until an owner is assigned. 
 - [ ] Assign one team member to every ticket.
 - [ ] Move completed work to Done.
 - [ ] Keep the board as the source of truth for Week 1 contribution evidence.
+
+
+## Final roster mapping recorded
+
+| Member | GitHub username | Role |
+|---|---|---|
+| Jhaira Nontiagudo | jhairamonteagudo597-eng | Repo Lead |
+| Regine Casida | casidaregine123-byte | Board Lead |
+| Alex Aclaracion | aaclaracionjr-prog | Scribe |
+| Jendylou Lapad | jendyloulapad-design | Builder |
+| Lyndel | lyndeloulapad-design | Builder |
+
+The repository now records the five-person ownership map. Creating/verifying the actual GitHub Project board still requires the team to perform the board action in GitHub.
