@@ -38,7 +38,7 @@ The school supply store needs a simple way to keep its inventory records organiz
 
 `pull main → create branch → commit → push branch → open PR → review → merge`
 
-Direct pushes to `main` should be blocked after branch protection is configured.
+The repository uses feature branches and pull requests for changes. The required GitHub main-branch protection still needs to be verified in repository settings.
 
 ### Week 1 deliverables
 
@@ -82,7 +82,7 @@ npm install
 npm test
 ```
 
-The test suite uses Node's built-in test runner with Supertest and runs serially where needed by shared database integration tests.
+The test suite uses Node's built-in test runner with Supertest and runs serially where needed by database integration tests.
 
 ### Deliverable 2 evidence
 
@@ -108,7 +108,7 @@ The test suite uses Node's built-in test runner with Supertest and runs serially
 - `public/ui/` — static Dashboard, Products, Suppliers, Customers, and Sales views.
 - `public/css/styles.css` and `public/js/components.js` — shared interface structure.
 
-Run `npm start` and open `/ui/` to review the Week 6 views. Real backend data binding is intentionally deferred to Week 7.
+Run `npm start` and open `/ui/` to review the current UI. Backend data binding is implemented in the later Week 7 work.
 
 ## Week 7 — Form Binding & Async Operations
 
@@ -213,3 +213,12 @@ The final presentation should follow problem → solution → architecture → l
 The current responsive interface is shown below.
 
 ![School Supply Store — UI Screenshots](docs/screenshots/ui-screenshots.svg)
+
+
+## Final Course Evidence Map
+
+- `docs/course-requirements-map.md` — Week 1–12 and Deliverables 1–4 evidence map.
+- `docs/database.md` — database tables, relationships, integrity rules, and inventory consistency.
+- `docs/branch-protection.md` — exact main-branch protection requirement and evidence boundary.
+- `docs/review-evidence.md` — what counts as genuine PR review evidence.
+- `docs/ai-notes/deliverable-4.md` — final-stage authorized AI-use record and evidence boundary.
