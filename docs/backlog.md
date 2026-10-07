@@ -9,7 +9,7 @@ Primary record types from Week 1:
 
 Every record type has Create, Read-list, Read-detail, Update, and Delete stories. Every story has acceptance criteria.
 
-> **Ownership:** Replace `jhairamonteagudo597-eng–5` with the actual team member names/GitHub usernames and assign every story to an owner on the GitHub Project board. The Week 2 handout requires each story to be an owned ticket.
+> **Ownership:** The repository now uses named members for all 20 stories. The GitHub Project board still requires human verification. The Week 2 handout requires each story to be an owned ticket.
 
 ## Products / School Supplies
 
@@ -39,7 +39,7 @@ Every record type has Create, Read-list, Read-detail, Update, and Delete stories
 - Only an existing product can be edited.
 - Invalid quantity or price values are rejected.
 - Saving shows the updated values in the list/detail view.
-**Owner:** jendyloulapad-design
+**Owner:** Jendylou Lapad
 
 ### P05 — Delete product
 **As a** store staff member, **I want to** remove an obsolete product **so that** it no longer appears in active inventory.
@@ -69,7 +69,7 @@ Every record type has Create, Read-list, Read-detail, Update, and Delete stories
 - A valid supplier opens its detail view.
 - Stored supplier fields are displayed.
 - An invalid supplier ID shows a not-found error.
-**Owner:** jendyloulapad-design
+**Owner:** Jendylou Lapad
 
 ### S04 — Update supplier
 **As a** store staff member, **I want to** edit supplier information **so that** contact records stay current.
@@ -99,7 +99,7 @@ Every record type has Create, Read-list, Read-detail, Update, and Delete stories
 - Existing customers are listed with contact information.
 - Records come from the database.
 - An empty state is shown when no customers exist.
-**Owner:** jendyloulapad-design
+**Owner:** Jendylou Lapad
 
 ### C03 — Customer detail
 **As a** store staff member, **I want to** view a customer's details **so that** I can inspect their stored information.
@@ -129,7 +129,7 @@ Every record type has Create, Read-list, Read-detail, Update, and Delete stories
 - A sale requires valid items and positive quantities.
 - The system rejects a sale when requested quantity exceeds available stock.
 - Successful sale creation records the transaction and updates stock.
-**Owner:** jendyloulapad-design
+**Owner:** Jendylou Lapad
 
 ### T02 — Sales list
 **As a** store staff member, **I want to** view sales **so that** I can review transaction history.
