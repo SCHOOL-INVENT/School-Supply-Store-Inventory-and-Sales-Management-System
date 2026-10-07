@@ -25,14 +25,13 @@ The school supply store needs a simple way to keep its inventory records organiz
 
 ### Team roster
 
-Replace the placeholders below with the five team members and starting roles.
-
-| Member | Starting role |
-|---|---|
-| Jhaira Nontiagudo | Repo Lead |
-| Regine Casida | Board Lead |
-| Alex Aclaracion | Scribe |
-| Jendylou Lapad | Builder |
+| Member | GitHub username | Starting role |
+|---|---|---|
+| Jhaira Nontiagudo | jhairamonteagudo597-eng | Repo Lead |
+| Regine Casida | casidaregine123-byte | Board Lead |
+| Alex Aclaracion | aaclaracionjr-prog | Scribe |
+| Jendylou Lapad | GitHub username not verified | Builder |
+| Lyndel | lyndeloulapad-design | Builder |
 
 
 ### Git collaboration loop
@@ -48,11 +47,12 @@ Direct pushes to `main` should be blocked after branch protection is configured.
 - [x] 4 core record types documented
 - [x] Git repository initialized
 - [x] Week 1 documentation added through a branch
-- [ ] Verify all 5 collaborators are added
+- [x] Verify all 5 team members are represented in the repository roster
 - [ ] Enable and test main branch protection
 - [ ] Create/verify the GitHub Project board
-- [ ] Replace remaining ownership placeholders with actual team members
+- [x] Replace repository ownership placeholders with named GitHub usernames
 - [ ] Record review evidence for the Week 1 PR
+
 
 See `docs/week1/` for the Week 1 problem statement, AI brainstorming note, and board setup checklist.
 
