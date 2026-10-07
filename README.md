@@ -206,3 +206,10 @@ Week 12 is the final submission stage.
 - docs/manual-evidence-record.md — template for recording actual local or Railway browser test results.
 
 The final presentation should follow problem → solution → architecture → live demo → what we learned. The live demo should use the deployed Railway application. Each member must complete their own oral code defense without AI.
+
+
+## UI Screenshots
+
+The current responsive interface is shown below.
+
+![School Supply Store — UI Screenshots](docs/screenshots/ui-screenshots.svg)
