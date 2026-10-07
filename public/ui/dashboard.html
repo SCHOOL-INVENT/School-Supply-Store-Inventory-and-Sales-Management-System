@@ -6,22 +6,69 @@ layout("Dashboard",
 "<div id='dashboard-state' class='state loading'>Loading your dashboard...</div>"+
 "<div id='dashboard-grid' class='grid'></div>"+
 "<div class='card'><div class='card-title'><h3>Recent Transactions</h3><a class='button small secondary' href='/ui/sales.html'>View all sales</a></div><div id='recent-sales'></div></div>"+
+"<div class='card'><div class='card-title'><h3>Low Stock Alerts</h3><a class='button small secondary' href='/ui/products.html'>View products</a></div><div id='low-stock'></div></div>"+
 "<div class='card'><div class='card-title'><h3>Quick actions</h3></div><div class='toolbar'><a class='button' href='/ui/products-create.html'>"+icon("plus")+" Add product</a><a class='button secondary' href='/ui/sales-create.html'>"+icon("plus")+" Record sale</a><a class='button secondary' href='/ui/stock.html'>"+icon("stock")+" Manage stock</a></div></div>",
 "Dashboard",
 "Live overview of your inventory and sales activity."
 );
-const state=document.getElementById("dashboard-state"),grid=document.getElementById("dashboard-grid"),recent=document.getElementById("recent-sales");
+const state=document.getElementById("dashboard-state"),grid=document.getElementById("dashboard-grid"),recent=document.getElementById("recent-sales"),lowStock=document.getElementById("low-stock");
 const token=localStorage.getItem("schoolSupplyToken");
+function escapeHtml(value){return String(value??"").replace(/[&<>"]/g,function(ch){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[ch];});}
+function authHeaders(){return {"Authorization":"Bearer "+token};}
+function renderRecentSales(items){
+ if(!items.length){recent.innerHTML="<div class='empty'>No sales transactions yet.</div>";return;}
+ recent.innerHTML="<div class='table-wrap'><table class='table'><thead><tr><th>Transaction</th><th>Total</th><th>Date</th></tr></thead><tbody>"+
+ items.map(function(s){return "<tr><td><strong>#"+Number(s.id)+"</strong></td><td>₱"+Number(s.total||0).toFixed(2)+"</td><td>"+escapeHtml(new Date(s.transactionDate).toLocaleString())+"</td></tr>";}).join("")+
+ "</tbody></table></div>";
+}
+function renderLowStock(items,threshold){
+ if(!items.length){lowStock.innerHTML="<div class='empty'>Inventory levels are healthy. No items are at or below "+Number(threshold)+" units.</div>";return;}
+ const rows=items.slice(0,5);
+ lowStock.innerHTML="<div class='table-wrap'><table class='table'><thead><tr><th>Product</th><th>Category</th><th>Quantity</th><th>Status</th></tr></thead><tbody>"+
+ rows.map(function(item){
+   const status=String(item.status||"").replace(/[^a-z-]/g,"");
+   return "<tr><td><strong>"+escapeHtml(item.name)+"</strong></td><td>"+escapeHtml(item.category)+"</td><td>"+Number(item.quantity).toLocaleString()+"</td><td><span class='badge "+escapeHtml(status)+"'>"+escapeHtml(status.replace(/-/g," "))+"</span></td></tr>";
+ }).join("")+
+ "</tbody></table></div>";
+}
 if(!token){location.replace("/ui/login.html");}
 else{
- fetch("/dashboard",{headers:{"Authorization":"Bearer "+token}})
- .then(async function(res){const json=await res.json();if(res.status===401){localStorage.removeItem("schoolSupplyToken");localStorage.removeItem("schoolSupplyUser");location.replace("/ui/login.html");return null;}if(!res.ok)throw new Error(json.error||"Dashboard unavailable");return json;})
- .then(function(json){if(!json)return;const d=json.data;state.className="hidden";
- const stats=[["products","Products",d.totalProducts,"Total items in catalog"],["sales","Sales","₱"+Number(d.totalSales||0).toFixed(2),"Cumulative sales"],["stock","Low stock",d.lowStockItems,"Items at or below threshold"],["sales","Transactions",d.totalTransactions,"Recorded transactions"]];
- grid.innerHTML=stats.map(function(s){return "<div class='card stat-card'><div class='stat-icon'>"+icon(s[0])+"</div><span class='muted'>"+s[1]+"</span><strong>"+s[2]+"</strong><small>"+s[3]+"</small></div>";}).join("");
- if(!d.recentSales.length){recent.innerHTML="<div class='empty'>No sales transactions yet.</div>";return;}
- recent.innerHTML="<div class='table-wrap'><table class='table'><thead><tr><th>Transaction</th><th>Total</th><th>Date</th></tr></thead><tbody>"+d.recentSales.map(function(s){return "<tr><td><strong>#"+s.id+"</strong></td><td>₱"+Number(s.total).toFixed(2)+"</td><td>"+new Date(s.transactionDate).toLocaleString()+"</td></tr>";}).join("")+"</tbody></table></div>";
+ Promise.all([
+   fetch("/dashboard",{headers:authHeaders()}),
+   fetch("/reports/low-stock?threshold=10",{headers:authHeaders()})
+ ])
+ .then(async function(responses){
+   const dashboardRes=responses[0],lowStockRes=responses[1];
+   const dashboardJson=await dashboardRes.json();
+   const lowStockJson=await lowStockRes.json();
+   if(dashboardRes.status===401||lowStockRes.status===401){
+     localStorage.removeItem("schoolSupplyToken");
+     localStorage.removeItem("schoolSupplyUser");
+     location.replace("/ui/login.html");
+     return null;
+   }
+   if(!dashboardRes.ok)throw new Error(dashboardJson.error||"Dashboard unavailable");
+   if(!lowStockRes.ok)throw new Error(lowStockJson.error||"Low-stock report unavailable");
+   return {dashboard:dashboardJson.data,lowStock:lowStockJson.data};
  })
- .catch(function(error){state.className="state error";state.textContent=error.message||"Unable to load dashboard."});
+ .then(function(result){
+   if(!result)return;
+   const d=result.dashboard,low=result.lowStock;
+   state.className="hidden";
+   const stats=[
+     ["products","Products",d.totalProducts,"Total items in catalog"],
+     ["sales","Sales","₱"+Number(d.totalSales||0).toFixed(2),"Cumulative sales"],
+     ["stock","Low stock",d.lowStockItems,"Items at or below threshold"],
+     ["sales","Transactions",d.totalTransactions,"Recorded transactions"]
+   ];
+   grid.innerHTML=stats.map(function(s){return "<div class='card stat-card'><div class='stat-icon'>"+icon(s[0])+"</div><span class='muted'>"+s[1]+"</span><strong>"+s[2]+"</strong><small>"+s[3]+"</small></div>";}).join("");
+   renderRecentSales(d.recentSales||[]);
+   renderLowStock(low.items||[],low.threshold);
+ })
+ .catch(function(error){
+   state.className="state error";
+   state.textContent=error.message||"Unable to load dashboard.";
+   lowStock.innerHTML="<div class='empty'>Low-stock information could not be loaded.</div>";
+ });
 }
 </script></body></html>
