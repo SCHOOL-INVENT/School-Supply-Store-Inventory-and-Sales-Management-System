@@ -195,3 +195,14 @@ npm install is intentionally used in CI so package.json and package-lock.json ca
 - Production database: Railway MySQL
 
 See `docs/deployment.md` for deployment notes.
+
+## Week 12 — Retrospective, Demo & Defense
+
+Week 12 is the final submission stage.
+
+- docs/retrospective.md — structured retrospective with repository-verified observations and a team discussion record.
+- docs/week12-demo-script.md — presentation arc, live-demo click path, graceful failure, backup demo, and presenter assignments.
+- docs/deliverable-4.md — final submission checklist separating repository evidence from human-only evidence.
+- docs/manual-evidence-record.md — template for recording actual local or Railway browser test results.
+
+The final presentation should follow problem → solution → architecture → live demo → what we learned. The live demo should use the deployed Railway application. Each member must complete their own oral code defense without AI.
