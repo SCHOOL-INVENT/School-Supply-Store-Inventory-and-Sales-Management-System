@@ -97,3 +97,13 @@ test("sale validation rejects zero quantity", () => {
   assert.equal(res.statusCode, 422);
   assert.match(res.body.field, /quantity/);
 });
+
+test("customer validation accepts valid gmail address", () => {
+  const req = { body: { name: "Cristian Timtim", contact: "09095320917", email: "cristiantimtim20@gmail.com", address: "MARAMAG BUKIDNON" } };
+  const res = mockRes();
+  let called = false;
+  validateCustomer(req, res, () => { called = true; });
+  assert.equal(called, true);
+  assert.equal(res.statusCode, 200);
+  assert.equal(req.validatedBody.email, "cristiantimtim20@gmail.com");
+});
