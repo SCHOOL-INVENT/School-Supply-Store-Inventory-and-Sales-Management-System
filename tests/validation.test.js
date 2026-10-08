@@ -97,3 +97,33 @@ test("sale validation rejects zero quantity", () => {
   assert.equal(res.statusCode, 422);
   assert.match(res.body.field, /quantity/);
 });
+
+test("customer validation accepts a valid email address", () => {
+  const req = { body: { name: "Jhaira Customer", contact: "09171234567", email: "jhaira@gmail.com", address: "General Santos City" } };
+  const res = mockRes();
+  let called = false;
+  validateCustomer(req, res, () => { called = true; });
+  assert.equal(called, true);
+  assert.equal(res.statusCode, 200);
+  assert.equal(req.validatedBody.email, "jhaira@gmail.com");
+});
+
+test("supplier validation accepts a valid email address", () => {
+  const req = { body: { name: "Jhaira Supplier", contact: "09171234567", email: "jhaira@gmail.com", address: "General Santos City" } };
+  const res = mockRes();
+  let called = false;
+  validateSupplier(req, res, () => { called = true; });
+  assert.equal(called, true);
+  assert.equal(res.statusCode, 200);
+  assert.equal(req.validatedBody.email, "jhaira@gmail.com");
+});
+
+test("party validation rejects malformed email addresses", () => {
+  for (const validator of [validateCustomer, validateSupplier]) {
+    const req = { body: { name: "Valid Name", contact: "09171234567", email: "not-an-email", address: "Test" } };
+    const res = mockRes();
+    validator(req, res, () => {});
+    assert.equal(res.statusCode, 422);
+    assert.equal(res.body.field, "email");
+  }
+});
