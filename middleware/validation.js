@@ -113,7 +113,7 @@ function validateParty(req, res, next, label) {
 
   if (
     body.email !== undefined &&
-    (typeof body.email !== "string" || body.email.length > 150 || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(body.email.trim()))
+    (typeof body.email !== "string" || body.email.length > 150 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim()))
   ) {
     return fail(res, "email", "email must be a valid email address");
   }
